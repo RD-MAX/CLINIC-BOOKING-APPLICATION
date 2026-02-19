@@ -40,7 +40,7 @@ public class BookingService {
     }
 
     public List<BookingConfirmationDto> getBookingsByDoctorId(Long doctorId) {
-        List<BookingConfirmation> bookings = bookingRepository.findByPatientId(doctorId);
+        List<BookingConfirmation> bookings = bookingRepository.findByDoctorId(doctorId);
         List<BookingConfirmationDto> result = new ArrayList<>();
 
         for (BookingConfirmation b : bookings) {
