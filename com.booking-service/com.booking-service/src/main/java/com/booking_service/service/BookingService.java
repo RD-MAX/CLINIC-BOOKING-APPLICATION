@@ -1,8 +1,14 @@
 package com.booking_service.service;
+import com.booking_service.client.DoctorClient;
+import com.booking_service.client.PatientClient;
 import com.booking_service.dto.BookingConfirmationDto;
 import com.booking_service.entity.BookingConfirmation;
 import com.booking_service.repository.BookingConfirmationRepository;
 import com.booking_service.repository.BookingRepository;
+import com.doctor_service.entity.Doctor;
+import com.doctor_service.entity.DoctorAppointmentSchedule;
+import com.doctor_service.entity.TimeSlots;
+import com.patient_service.entity.Patient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,16 +26,70 @@ public class BookingService {
     @Autowired
     private BookingConfirmationRepository bookingConfirmationRepository;
 
+    @Autowired
+    private DoctorClient doctorClient;
+
+    @Autowired
+    private PatientClient patientClient;
 
 
     public BookingConfirmationDto createBooking(BookingConfirmationDto dto) {
 
+
+
+        // 🔒 Validate slot availability (prevent duplicate booking)
+        boolean exists = bookingConfirmationRepository.existsByDoctorIdAndDateAndTime(
+                dto.getDoctorId(),
+                dto.getDate(),
+                dto.getTime()
+        );
+
+        if (exists) {
+            throw new RuntimeException("Slot already booked for this doctor at selected date & time");
+        }
+
+
+
+        // 1️⃣ Validate doctor exists
+        Doctor doctor = doctorClient.getDoctorById(dto.getDoctorId());
+        if (doctor == null) {
+            throw new RuntimeException("Doctor not found");
+        }
+
+// 2️⃣ Validate patient exists
+        Patient patient = patientClient.getPatientById(dto.getPatientId());
+        if (patient == null) {
+            throw new RuntimeException("Patient not found");
+        }
+
+// 3️⃣ Validate slot exists in doctor's schedule
+        boolean slotFound = false;
+
+        for (DoctorAppointmentSchedule schedule : doctor.getAppointmentSchedules()) {
+            if (schedule.getDate().isEqual(dto.getDate())) {
+                for (TimeSlots slot : schedule.getTimeSlots()) {
+                    if (slot.getTime().equals(dto.getTime())) {
+                        slotFound = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (!slotFound) {
+            throw new RuntimeException("Selected slot is not available for this doctor");
+        }
+
+
         BookingConfirmation booking = mapToEntity(dto);
-         booking.setStatus("BOOKED");
+        booking.setStatus("BOOKED");   // initial status before payment
 
         BookingConfirmation saved = bookingRepository.save(booking);
         return mapToDto(saved);
     }
+
+
+
 
     public BookingConfirmationDto getBookingById(Long id) {
         BookingConfirmation booking = bookingRepository.findById(id)
