@@ -1,6 +1,7 @@
 package com.booking_service.service;
 import com.booking_service.dto.BookingConfirmationDto;
 import com.booking_service.entity.BookingConfirmation;
+import com.booking_service.repository.BookingConfirmationRepository;
 import com.booking_service.repository.BookingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,13 @@ public class BookingService {
 
     @Autowired
     private BookingRepository bookingRepository;
+
+    //===================================confrimation after payment
+
+    @Autowired
+    private BookingConfirmationRepository bookingConfirmationRepository;
+
+
 
     public BookingConfirmationDto createBooking(BookingConfirmationDto dto) {
 
