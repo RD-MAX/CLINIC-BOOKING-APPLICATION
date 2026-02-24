@@ -28,7 +28,7 @@ public ResponseEntity<StripeResponse> checkoutProducts(@RequestBody ProductReque
 @GetMapping("/success")
     public ResponseEntity<String> handleSuccess(@RequestParam("session_id") String sessionId){
 
-    Stripe.apiKey="";
+    Stripe.apiKey="sk_test_51T3gES4FDa3hpyW3KaNX4egedDi0adS01HKp3POexvLYMVLzfInSUKY1RBZtnRzCTw0eywqo4yJM87fj6OqydTpI00EU2pGT0H";
     try{
         Session s = Session.retrieve(sessionId);
         String paymentStatus= s.getPaymentStatus();
