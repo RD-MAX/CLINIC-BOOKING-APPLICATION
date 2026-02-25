@@ -19,6 +19,12 @@ public class BookingController {
         return bookingService.createBooking(dto);
     }
 
+    // after--payment
+    @PostMapping("/confirm")
+    public BookingConfirmationDto confirmBooking(@RequestBody BookingConfirmationDto dto) {
+        return bookingService.confirmBooking(dto);
+    }
+
     @GetMapping("/getbybookingid")
     public BookingConfirmationDto getBookingById(@RequestParam Long id) {
         return bookingService.getBookingById(id);
@@ -32,4 +38,6 @@ public class BookingController {
     public List<BookingConfirmationDto> getBookingsByDoctorId(@RequestParam Long doctorId) {
         return bookingService.getBookingsByDoctorId(doctorId);
     }
+
+
 }

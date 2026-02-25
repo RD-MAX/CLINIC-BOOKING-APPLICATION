@@ -13,11 +13,13 @@ import com.doctor_service.entity.TimeSlots;
 import com.patient_service.entity.Patient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional
 public class BookingService {
 
     @Autowired
@@ -79,21 +81,35 @@ public class BookingService {
         Booking rawBooking = new Booking();               // ✅ renamed variable
         rawBooking.setDoctorId(dto.getDoctorId());
         rawBooking.setPatientId(dto.getPatientId());
+        rawBooking.setDate(dto.getDate());          // ✅ FIX: store date for pending booking
+        rawBooking.setTime(dto.getTime());          // ✅ FIX: store time for pending booking
+        rawBooking.setStatus("PENDING_PAYMENT");    // ✅ FIX: mark as pending until payment
+
         bookingRepository.save(rawBooking);
 
-        // 5️⃣ Save booking confirmation in BOOKING_CONFIRMATIONS table
-        BookingConfirmation confirmation = mapToEntity(dto);  // ✅ renamed variable
-        confirmation.setStatus("BOOKED");   // initial status before payment
+        // ❌ Do NOT save into BOOKING_CONFIRMATIONS here (payment not done yet)
+        // confirmation will be created after payment success
 
-        BookingConfirmation saved = bookingConfirmationRepository.save(confirmation);
-        return mapToDto(saved);
+        dto.setStatus("PENDING_PAYMENT");           // ✅ FIX: send pending status to frontend
+        return dto;
     }
+
+
+//    BookingConfirmation confirmation = mapToEntity(dto);  // ✅ renamed variable
+//        confirmation.setStatus("BOOKED");   // initial status before payment
+//
+//        BookingConfirmation saved = bookingConfirmationRepository.save(confirmation);
+//        return mapToDto(saved);
+//    }
+
+
 
     public BookingConfirmationDto getBookingById(Long id) {
         BookingConfirmation booking = bookingConfirmationRepository.findById(id)   // ✅ fixed repo
                 .orElseThrow(() -> new RuntimeException("Booking not found: " + id));
         return mapToDto(booking);
     }
+
 
     public List<BookingConfirmationDto> getBookingsByPatientId(Long patientId) {
         List<BookingConfirmation> bookings =
@@ -106,6 +122,8 @@ public class BookingService {
         return result;
     }
 
+
+
     public List<BookingConfirmationDto> getBookingsByDoctorId(Long doctorId) {
         List<BookingConfirmation> bookings =
                 bookingConfirmationRepository.findByDoctorId(doctorId);  // ✅ fixed repo
@@ -116,6 +134,25 @@ public class BookingService {
         }
         return result;
     }
+
+    @Transactional
+    // after payment--status changed to --booked-----------
+    public BookingConfirmationDto confirmBooking(BookingConfirmationDto dto) {
+
+        // 1️⃣ Save confirmed booking
+        BookingConfirmation confirmation = mapToEntity(dto);
+        confirmation.setStatus("BOOKED");
+        BookingConfirmation saved = bookingConfirmationRepository.save(confirmation);
+
+        // 2️⃣ Delete pending booking
+        bookingRepository.deleteByDoctorIdAndPatientIdAndStatus(
+                dto.getDoctorId(), dto.getPatientId(), "PENDING_PAYMENT"
+        );
+
+        return mapToDto(saved);
+    }
+
+
 
     // 🔁 Mappers
     private BookingConfirmation mapToEntity(BookingConfirmationDto dto) {
