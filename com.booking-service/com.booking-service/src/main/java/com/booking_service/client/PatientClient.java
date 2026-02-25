@@ -9,4 +9,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface PatientClient {
     @GetMapping("/getpatientbyid")
     public Patient getPatientById(@RequestParam long id);
+
+
 }
