@@ -5,13 +5,18 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
-@SpringBootApplication
+// ✅ Correct excludes for Spring Boot 4.x
+@SpringBootApplication(
+		excludeName = {
+				"org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration",
+				"org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration"
+		}
+)
 @EnableDiscoveryClient
-@EnableFeignClients
+@EnableFeignClients(basePackages = "com.payment_service.client")
 public class PaymentServiceApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(PaymentServiceApplication.class, args);
 	}
-
 }

@@ -1,0 +1,14 @@
+package com.payment_service.client;
+
+
+import com.payment_service.dto.BookingConfirmationDto;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+@FeignClient(name = "booking-service")
+public interface BookingClient {
+
+    @PostMapping("/api/v1/bookings/confirm")
+    void confirmBooking(@RequestBody BookingConfirmationDto dto);
+}

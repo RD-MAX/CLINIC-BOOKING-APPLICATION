@@ -1,5 +1,6 @@
 package com.booking_service.service;
 
+import com.booking_service.client.BookingClient;
 import com.booking_service.client.DoctorClient;
 import com.booking_service.client.PatientClient;
 import com.booking_service.dto.BookingConfirmationDto;
@@ -34,6 +35,8 @@ public class BookingService {
 
     @Autowired
     private PatientClient patientClient;
+    @Autowired
+    private BookingClient bookingClient;
 
     public BookingConfirmationDto createBooking(BookingConfirmationDto dto) {
 
@@ -81,39 +84,55 @@ public class BookingService {
         Booking rawBooking = new Booking();               // ✅ renamed variable
         rawBooking.setDoctorId(dto.getDoctorId());
         rawBooking.setPatientId(dto.getPatientId());
-        rawBooking.setDate(dto.getDate());          // ✅ FIX: store date for pending booking
-        rawBooking.setTime(dto.getTime());          // ✅ FIX: store time for pending booking
-        rawBooking.setStatus("PENDING_PAYMENT");    // ✅ FIX: mark as pending until payment
+        rawBooking.setDate(dto.getDate());          // ✅ store date for pending booking
+        rawBooking.setTime(dto.getTime());          // ✅ store time for pending booking
+        rawBooking.setStatus("PENDING_PAYMENT");    // ✅ pending until payment
 
         bookingRepository.save(rawBooking);
 
         // ❌ Do NOT save into BOOKING_CONFIRMATIONS here (payment not done yet)
         // confirmation will be created after payment success
 
-        dto.setStatus("PENDING_PAYMENT");           // ✅ FIX: send pending status to frontend
+        dto.setStatus("PENDING_PAYMENT");           // ✅ send pending status to frontend
         return dto;
     }
 
-
-//    BookingConfirmation confirmation = mapToEntity(dto);  // ✅ renamed variable
-//        confirmation.setStatus("BOOKED");   // initial status before payment
-//
-//        BookingConfirmation saved = bookingConfirmationRepository.save(confirmation);
-//        return mapToDto(saved);
-//    }
-
-
-
     public BookingConfirmationDto getBookingById(Long id) {
-        BookingConfirmation booking = bookingConfirmationRepository.findById(id)   // ✅ fixed repo
-                .orElseThrow(() -> new RuntimeException("Booking not found: " + id));
-        return mapToDto(booking);
-    }
 
+        // 1️⃣ First try to fetch from CONFIRMED bookings
+        BookingConfirmation confirmed = bookingConfirmationRepository.findById(id).orElse(null);
+
+        if (confirmed != null) {
+            return mapToDto(confirmed);
+        }
+
+        // 2️⃣ If not found, fetch from PENDING bookings
+        Booking rawBooking = bookingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Booking not found: " + id));
+
+        // 3️⃣ Enrich pending booking using Doctor & Patient services
+        Doctor doctor = doctorClient.getDoctorById(rawBooking.getDoctorId());
+        Patient patient = patientClient.getPatientById(rawBooking.getPatientId());
+
+        BookingConfirmationDto dto = new BookingConfirmationDto();
+        dto.setId(rawBooking.getId());
+        dto.setDoctorId(rawBooking.getDoctorId());
+        dto.setPatientId(rawBooking.getPatientId());
+        dto.setDate(rawBooking.getDate());
+        dto.setTime(rawBooking.getTime());
+        dto.setStatus(rawBooking.getStatus());
+
+        // ✅ Enriched fields
+        dto.setDoctorName(doctor.getName());
+        dto.setPatientName(patient.getName());
+        dto.setAddress(doctor.getAddress());
+
+        return dto;
+    }
 
     public List<BookingConfirmationDto> getBookingsByPatientId(Long patientId) {
         List<BookingConfirmation> bookings =
-                bookingConfirmationRepository.findByPatientId(patientId);  // ✅ fixed repo
+                bookingConfirmationRepository.findByPatientId(patientId);
 
         List<BookingConfirmationDto> result = new ArrayList<>();
         for (BookingConfirmation b : bookings) {
@@ -121,12 +140,10 @@ public class BookingService {
         }
         return result;
     }
-
-
 
     public List<BookingConfirmationDto> getBookingsByDoctorId(Long doctorId) {
         List<BookingConfirmation> bookings =
-                bookingConfirmationRepository.findByDoctorId(doctorId);  // ✅ fixed repo
+                bookingConfirmationRepository.findByDoctorId(doctorId);
 
         List<BookingConfirmationDto> result = new ArrayList<>();
         for (BookingConfirmation b : bookings) {
@@ -135,13 +152,20 @@ public class BookingService {
         return result;
     }
 
-    @Transactional
     // after payment--status changed to --booked-----------
+    @Transactional
     public BookingConfirmationDto confirmBooking(BookingConfirmationDto dto) {
+
+        Doctor doctor = doctorClient.getDoctorById(dto.getDoctorId());
+        Patient patient = patientClient.getPatientById(dto.getPatientId());
 
         // 1️⃣ Save confirmed booking
         BookingConfirmation confirmation = mapToEntity(dto);
-        confirmation.setStatus("BOOKED");
+        confirmation.setStatus("confirmed");
+        confirmation.setAddress(doctor.getAddress());
+        confirmation.setDoctorName(doctor.getName());
+        confirmation.setPatientName(patient.getName());
+
         BookingConfirmation saved = bookingConfirmationRepository.save(confirmation);
 
         // 2️⃣ Delete pending booking
@@ -151,8 +175,6 @@ public class BookingService {
 
         return mapToDto(saved);
     }
-
-
 
     // 🔁 Mappers
     private BookingConfirmation mapToEntity(BookingConfirmationDto dto) {
