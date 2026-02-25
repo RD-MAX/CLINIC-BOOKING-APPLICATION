@@ -2,6 +2,9 @@ package com.booking_service.entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 @Entity
 @Table(name="bookings")
 public class Booking {
@@ -10,6 +13,37 @@ public class Booking {
     private long id;
     private long doctorId;
     private long patientId;
+
+// added infor for slots and date and pending status of payment
+    private LocalDate date;      // ✅ add
+    private LocalTime time;      // ✅ add
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public LocalTime getTime() {
+        return time;
+    }
+
+    public void setTime(LocalTime time) {
+        this.time = time;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    private String status;       // ✅ PENDING_PAYMENT
+
 
     public long getId() {
         return id;
