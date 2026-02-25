@@ -1,7 +1,9 @@
 package com.booking_service.service;
+
 import com.booking_service.client.DoctorClient;
 import com.booking_service.client.PatientClient;
 import com.booking_service.dto.BookingConfirmationDto;
+import com.booking_service.entity.Booking;
 import com.booking_service.entity.BookingConfirmation;
 import com.booking_service.repository.BookingConfirmationRepository;
 import com.booking_service.repository.BookingRepository;
@@ -22,7 +24,6 @@ public class BookingService {
     private BookingRepository bookingRepository;
 
     //===================================confrimation after payment
-
     @Autowired
     private BookingConfirmationRepository bookingConfirmationRepository;
 
@@ -32,10 +33,7 @@ public class BookingService {
     @Autowired
     private PatientClient patientClient;
 
-
     public BookingConfirmationDto createBooking(BookingConfirmationDto dto) {
-
-
 
         // 🔒 Validate slot availability (prevent duplicate booking)
         boolean exists = bookingConfirmationRepository.existsByDoctorIdAndDateAndTime(
@@ -48,23 +46,20 @@ public class BookingService {
             throw new RuntimeException("Slot already booked for this doctor at selected date & time");
         }
 
-
-
         // 1️⃣ Validate doctor exists
         Doctor doctor = doctorClient.getDoctorById(dto.getDoctorId());
         if (doctor == null) {
             throw new RuntimeException("Doctor not found");
         }
 
-// 2️⃣ Validate patient exists
+        // 2️⃣ Validate patient exists
         Patient patient = patientClient.getPatientById(dto.getPatientId());
         if (patient == null) {
             throw new RuntimeException("Patient not found");
         }
 
-// 3️⃣ Validate slot exists in doctor's schedule
+        // 3️⃣ Validate slot exists in doctor's schedule
         boolean slotFound = false;
-
         for (DoctorAppointmentSchedule schedule : doctor.getAppointmentSchedules()) {
             if (schedule.getDate().isEqual(dto.getDate())) {
                 for (TimeSlots slot : schedule.getTimeSlots()) {
@@ -80,27 +75,31 @@ public class BookingService {
             throw new RuntimeException("Selected slot is not available for this doctor");
         }
 
+        // 4️⃣ Save basic booking in BOOKINGS table
+        Booking rawBooking = new Booking();               // ✅ renamed variable
+        rawBooking.setDoctorId(dto.getDoctorId());
+        rawBooking.setPatientId(dto.getPatientId());
+        bookingRepository.save(rawBooking);
 
-        BookingConfirmation booking = mapToEntity(dto);
-        booking.setStatus("BOOKED");   // initial status before payment
+        // 5️⃣ Save booking confirmation in BOOKING_CONFIRMATIONS table
+        BookingConfirmation confirmation = mapToEntity(dto);  // ✅ renamed variable
+        confirmation.setStatus("BOOKED");   // initial status before payment
 
-        BookingConfirmation saved = bookingRepository.save(booking);
+        BookingConfirmation saved = bookingConfirmationRepository.save(confirmation);
         return mapToDto(saved);
     }
 
-
-
-
     public BookingConfirmationDto getBookingById(Long id) {
-        BookingConfirmation booking = bookingRepository.findById(id)
+        BookingConfirmation booking = bookingConfirmationRepository.findById(id)   // ✅ fixed repo
                 .orElseThrow(() -> new RuntimeException("Booking not found: " + id));
         return mapToDto(booking);
     }
 
     public List<BookingConfirmationDto> getBookingsByPatientId(Long patientId) {
-        List<BookingConfirmation> bookings = bookingRepository.findByPatientId(patientId);
-        List<BookingConfirmationDto> result = new ArrayList<>();
+        List<BookingConfirmation> bookings =
+                bookingConfirmationRepository.findByPatientId(patientId);  // ✅ fixed repo
 
+        List<BookingConfirmationDto> result = new ArrayList<>();
         for (BookingConfirmation b : bookings) {
             result.add(mapToDto(b));
         }
@@ -108,9 +107,10 @@ public class BookingService {
     }
 
     public List<BookingConfirmationDto> getBookingsByDoctorId(Long doctorId) {
-        List<BookingConfirmation> bookings = bookingRepository.findByDoctorId(doctorId);
-        List<BookingConfirmationDto> result = new ArrayList<>();
+        List<BookingConfirmation> bookings =
+                bookingConfirmationRepository.findByDoctorId(doctorId);  // ✅ fixed repo
 
+        List<BookingConfirmationDto> result = new ArrayList<>();
         for (BookingConfirmation b : bookings) {
             result.add(mapToDto(b));
         }
@@ -139,4 +139,3 @@ public class BookingService {
         return dto;
     }
 }
-
