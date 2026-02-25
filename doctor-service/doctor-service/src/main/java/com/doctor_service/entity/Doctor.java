@@ -1,5 +1,6 @@
 package com.doctor_service.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -48,7 +49,7 @@ public class Doctor {
     private Area area;
 
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    @JsonManagedReference
+    @JsonManagedReference
     private List<DoctorAppointmentSchedule> appointmentSchedules;
 
     public List<DoctorAppointmentSchedule> getAppointmentSchedules() {
