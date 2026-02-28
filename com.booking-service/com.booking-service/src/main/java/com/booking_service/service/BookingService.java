@@ -39,14 +39,22 @@ public class BookingService {
 
     public BookingConfirmationDto createBooking(BookingConfirmationDto dto) {
 
-        // 🔒 Validate slot availability (prevent duplicate booking)
-        boolean exists = bookingConfirmationRepository.existsByDoctorIdAndDateAndTime(
-                dto.getDoctorId(),
-                dto.getDate(),
-                dto.getTime()
-        );
+        boolean pendingExists =
+                bookingRepository.existsByDoctorIdAndDateAndTimeAndStatus(
+                        dto.getDoctorId(),
+                        dto.getDate(),
+                        dto.getTime(),
+                        "PENDING_PAYMENT"
+                );
 
-        if (exists) {
+        boolean confirmedExists =
+                bookingConfirmationRepository.existsByDoctorIdAndDateAndTime(
+                        dto.getDoctorId(),
+                        dto.getDate(),
+                        dto.getTime()
+                );
+
+        if (pendingExists || confirmedExists) {
             throw new RuntimeException("Slot already booked for this doctor at selected date & time");
         }
 
@@ -168,12 +176,12 @@ public class BookingService {
     @Transactional
     public BookingConfirmationDto confirmBookingById(Long bookingId) {
 
-        // 1️⃣ If already confirmed → ignore duplicate webhook
+        // 1️⃣ Ignore duplicate webhook
         BookingConfirmation alreadyConfirmed =
                 bookingConfirmationRepository.findById(bookingId).orElse(null);
 
         if (alreadyConfirmed != null) {
-            System.out.println("⚠ Booking already confirmed. Ignoring duplicate webhook.");
+            System.out.println("⚠ Already confirmed. Ignoring duplicate webhook.");
             return mapToDto(alreadyConfirmed);
         }
 
@@ -182,21 +190,38 @@ public class BookingService {
 
         if (rawBooking == null) {
             System.out.println("⚠ Booking not found. Possibly already processed.");
-            return null; // do NOT throw exception
-        }
-
-        if (!"PENDING_PAYMENT".equals(rawBooking.getStatus())) {
-            System.out.println("⚠ Booking not in pending state. Ignoring.");
             return null;
         }
 
-        // 3️⃣ Fetch doctor & patient
+        if (!"PENDING_PAYMENT".equals(rawBooking.getStatus())) {
+            System.out.println("⚠ Booking not in PENDING state.");
+            return null;
+        }
+
+        // ✅ 3️⃣ NEW: Check if slot already confirmed by someone else
+        boolean confirmedExists =
+                bookingConfirmationRepository.existsByDoctorIdAndDateAndTime(
+                        rawBooking.getDoctorId(),
+                        rawBooking.getDate(),
+                        rawBooking.getTime()
+                );
+
+        if (confirmedExists) {
+
+            System.out.println("⚠ Slot already taken. Marking booking FAILED.");
+
+            rawBooking.setStatus("FAILED");
+            bookingRepository.save(rawBooking);
+
+            return null;  // 🔥 IMPORTANT: stop here
+        }
+
+        // 4️⃣ Normal confirmation flow
         Doctor doctor = doctorClient.getDoctorById(rawBooking.getDoctorId());
         Patient patient = patientClient.getPatientById(rawBooking.getPatientId());
 
-        // 4️⃣ Create confirmation
         BookingConfirmation confirmation = new BookingConfirmation();
-        confirmation.setId(rawBooking.getId()); // 🔥 IMPORTANT (same ID)
+        confirmation.setId(rawBooking.getId()); // same ID
         confirmation.setDoctorId(rawBooking.getDoctorId());
         confirmation.setPatientId(rawBooking.getPatientId());
         confirmation.setDate(rawBooking.getDate());
@@ -212,11 +237,10 @@ public class BookingService {
         BookingConfirmation saved =
                 bookingConfirmationRepository.save(confirmation);
 
-        // 5️⃣ Update pending booking status
         rawBooking.setStatus("CONFIRMED");
         bookingRepository.save(rawBooking);
 
-        System.out.println("✅ Booking confirmed safely for ID: " + bookingId);
+        System.out.println("✅ Booking confirmed for ID: " + bookingId);
 
         return mapToDto(saved);
     }
