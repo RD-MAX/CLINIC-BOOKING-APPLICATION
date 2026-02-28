@@ -8,14 +8,29 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductRequestDto {
+// we want --instead of sending whole productrequestdto--we will send only booking id
+    //to pay for it
+
+    //booking id will be holding all this details
+
+
+    // product details
     private String name;
     private Long amount;
     private Long quantity;
-
     private String currency;
+
+// booking details
+    private Long doctorId;
+    private Long patientId;
+    private String date;   // "2026-02-27"
+    private String time;   // "16:15"
+
 
     // 🔥 Add booking reference fields
     private Long bookingId;
+
+
 
     public String getName() {
         return name;
@@ -89,8 +104,5 @@ public class ProductRequestDto {
         this.doctorId = doctorId;
     }
 
-    private Long doctorId;
-    private Long patientId;
-    private String date;   // "2026-02-27"
-    private String time;   // "16:15"
+
 }

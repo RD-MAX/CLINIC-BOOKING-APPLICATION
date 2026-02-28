@@ -33,6 +33,18 @@ public class Doctor {
 
     private Area area;
 
+
+
+    private String clinicName;
+
+    public String getClinicName() {
+        return clinicName;
+    }
+
+    public void setClinicName(String clinicName) {
+        this.clinicName = clinicName;
+    }
+
     private List<DoctorAppointmentSchedule> appointmentSchedules;
 
     public List<DoctorAppointmentSchedule> getAppointmentSchedules() {

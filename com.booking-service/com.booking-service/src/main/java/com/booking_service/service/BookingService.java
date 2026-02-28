@@ -35,8 +35,7 @@ public class BookingService {
 
     @Autowired
     private PatientClient patientClient;
-    @Autowired
-    private BookingClient bookingClient;
+
 
     public BookingConfirmationDto createBooking(BookingConfirmationDto dto) {
 
@@ -87,6 +86,9 @@ public class BookingService {
         rawBooking.setDate(dto.getDate());          // ✅ store date for pending booking
         rawBooking.setTime(dto.getTime());          // ✅ store time for pending booking
         rawBooking.setStatus("PENDING_PAYMENT");    // ✅ pending until payment
+        rawBooking.setAmount(dto.getBookingAmount());
+
+
 
         bookingRepository.save(rawBooking);
 
@@ -124,8 +126,15 @@ public class BookingService {
 
         // ✅ Enriched fields
         dto.setDoctorName(doctor.getName());
+        dto.setClinicName(doctor.getName());
         dto.setPatientName(patient.getName());
         dto.setAddress(doctor.getAddress());
+
+
+
+        // 🔥 NEW: extra fields in response
+        dto.setClinicName(doctor.getClinicName());
+        dto.setBookingAmount(rawBooking.getAmount());
 
         return dto;
     }
@@ -153,28 +162,90 @@ public class BookingService {
     }
 
     // after payment--status changed to --booked-----------
+
+
+    // 🔥 NEW: Confirm booking using bookingId (used by payment-service)
     @Transactional
-    public BookingConfirmationDto confirmBooking(BookingConfirmationDto dto) {
+    public BookingConfirmationDto confirmBookingById(Long bookingId) {
 
-        Doctor doctor = doctorClient.getDoctorById(dto.getDoctorId());
-        Patient patient = patientClient.getPatientById(dto.getPatientId());
+        // 1️⃣ If already confirmed → ignore duplicate webhook
+        BookingConfirmation alreadyConfirmed =
+                bookingConfirmationRepository.findById(bookingId).orElse(null);
 
-        // 1️⃣ Save confirmed booking
-        BookingConfirmation confirmation = mapToEntity(dto);
-        confirmation.setStatus("confirmed");
-        confirmation.setAddress(doctor.getAddress());
+        if (alreadyConfirmed != null) {
+            System.out.println("⚠ Booking already confirmed. Ignoring duplicate webhook.");
+            return mapToDto(alreadyConfirmed);
+        }
+
+        // 2️⃣ Fetch pending booking
+        Booking rawBooking = bookingRepository.findById(bookingId).orElse(null);
+
+        if (rawBooking == null) {
+            System.out.println("⚠ Booking not found. Possibly already processed.");
+            return null; // do NOT throw exception
+        }
+
+        if (!"PENDING_PAYMENT".equals(rawBooking.getStatus())) {
+            System.out.println("⚠ Booking not in pending state. Ignoring.");
+            return null;
+        }
+
+        // 3️⃣ Fetch doctor & patient
+        Doctor doctor = doctorClient.getDoctorById(rawBooking.getDoctorId());
+        Patient patient = patientClient.getPatientById(rawBooking.getPatientId());
+
+        // 4️⃣ Create confirmation
+        BookingConfirmation confirmation = new BookingConfirmation();
+        confirmation.setId(rawBooking.getId()); // 🔥 IMPORTANT (same ID)
+        confirmation.setDoctorId(rawBooking.getDoctorId());
+        confirmation.setPatientId(rawBooking.getPatientId());
+        confirmation.setDate(rawBooking.getDate());
+        confirmation.setTime(rawBooking.getTime());
+        confirmation.setStatus("CONFIRMED");
+
         confirmation.setDoctorName(doctor.getName());
         confirmation.setPatientName(patient.getName());
+        confirmation.setAddress(doctor.getAddress());
+        confirmation.setClinicName(doctor.getClinicName());
+        confirmation.setBookingAmount(rawBooking.getAmount());
 
-        BookingConfirmation saved = bookingConfirmationRepository.save(confirmation);
+        BookingConfirmation saved =
+                bookingConfirmationRepository.save(confirmation);
 
-        // 2️⃣ Delete pending booking
-        bookingRepository.deleteByDoctorIdAndPatientIdAndStatus(
-                dto.getDoctorId(), dto.getPatientId(), "PENDING_PAYMENT"
-        );
+        // 5️⃣ Update pending booking status
+        rawBooking.setStatus("CONFIRMED");
+        bookingRepository.save(rawBooking);
+
+        System.out.println("✅ Booking confirmed safely for ID: " + bookingId);
 
         return mapToDto(saved);
     }
+
+//    @Transactional
+//    public BookingConfirmationDto confirmBooking(BookingConfirmationDto dto) {
+//
+//        Doctor doctor = doctorClient.getDoctorById(dto.getDoctorId());
+//        Patient patient = patientClient.getPatientById(dto.getPatientId());
+//
+//        // 1️⃣ Save confirmed booking
+//        BookingConfirmation confirmation = mapToEntity(dto);
+//        confirmation.setStatus("confirmed");
+//        confirmation.setAddress(doctor.getAddress());
+//        confirmation.setDoctorName(doctor.getName());
+//        confirmation.setPatientName(patient.getName());
+//
+//        confirmation.setClinicName(doctor.getClinicName());
+//        confirmation.setBookingAmount(dto.getBookingAmount());
+//
+//        BookingConfirmation saved = bookingConfirmationRepository.save(confirmation);
+//
+//        // 2️⃣ Delete pending booking
+//        bookingRepository.deleteByDoctorIdAndPatientIdAndStatus(
+//                dto.getDoctorId(), dto.getPatientId(), "PENDING_PAYMENT"
+//        );
+//
+//        return mapToDto(saved);
+//    }
 
     // 🔁 Mappers
     private BookingConfirmation mapToEntity(BookingConfirmationDto dto) {
@@ -195,6 +266,12 @@ public class BookingService {
         dto.setDate(booking.getDate());
         dto.setTime(booking.getTime());
         dto.setStatus(booking.getStatus());
+
+
+        dto.setClinicName(booking.getClinicName());
+        dto.setBookingAmount(booking.getBookingAmount());
+
+
         return dto;
     }
 }
