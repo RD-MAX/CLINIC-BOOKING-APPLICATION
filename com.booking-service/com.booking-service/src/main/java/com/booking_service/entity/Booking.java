@@ -18,6 +18,19 @@ public class Booking {
     private LocalDate date;      // ✅ add
     private LocalTime time;      // ✅ add
 
+
+    private Float amount;//for etra details on fetching by booking id
+
+
+
+    public Float getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Float amount) {
+        this.amount = amount;
+    }
+
     public LocalDate getDate() {
         return date;
     }

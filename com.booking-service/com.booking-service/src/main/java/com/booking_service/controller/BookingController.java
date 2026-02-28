@@ -19,15 +19,15 @@ public class BookingController {
         return bookingService.createBooking(dto);
     }
 
-    // after--payment
-    @PostMapping("/confirm")
-    public BookingConfirmationDto confirmBooking(@RequestBody BookingConfirmationDto dto) {
-        return bookingService.confirmBooking(dto);
+     //after--payment--confirm by details in json-- /*@RequestBody BookingConfirmationDto dto*/
+   @PostMapping("/confirm/{bookingId}")
+    public BookingConfirmationDto confirmBookingById(@PathVariable long bookingId) {
+        return bookingService.confirmBookingById(bookingId);
     }
 
-    @GetMapping("/getbybookingid")
-    public BookingConfirmationDto getBookingById(@RequestParam Long id) {
-        return bookingService.getBookingById(id);
+    @GetMapping("/{bookingId}")
+    public BookingConfirmationDto getBookingById(@PathVariable Long bookingId) {
+        return bookingService.getBookingById(bookingId);
     }
 
     @GetMapping("/getbypatientid")

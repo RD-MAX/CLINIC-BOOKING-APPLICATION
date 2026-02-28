@@ -10,4 +10,6 @@ public interface BookingClient {
 
     @PostMapping("/confirm")
     BookingConfirmationDto confirmBooking(@RequestBody BookingConfirmationDto dto);
+
+
 }

@@ -16,6 +16,27 @@ public class BookingConfirmationDto {
     private LocalTime time;
     private String status;
 
+
+    // 🔥 new fields
+    private String clinicName;
+    private Float bookingAmount;
+
+    public String getClinicName() {
+        return clinicName;
+    }
+
+    public void setClinicName(String clinicName) {
+        this.clinicName = clinicName;
+    }
+
+    public Float getBookingAmount() {
+        return bookingAmount;
+    }
+
+    public void setBookingAmount(Float bookingAmount) {
+        this.bookingAmount = bookingAmount;
+    }
+
     public String getStatus() {
         return status;
     }

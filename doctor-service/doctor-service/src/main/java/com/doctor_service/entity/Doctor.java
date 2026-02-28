@@ -39,6 +39,17 @@ public class Doctor {
     @JoinColumn(name = "city_id")
     private City city;
 
+    // 🔥 NEW FIELD (you asked for clinicName in response)
+    @Column(nullable = false)
+    private String clinicName;
+
+    public String getClinicName() {
+        return clinicName;
+    }
+
+    public void setClinicName(String clinicName) {
+        this.clinicName = clinicName;
+    }
 
 
     @Column(name = "address", nullable = false, length = 1000)

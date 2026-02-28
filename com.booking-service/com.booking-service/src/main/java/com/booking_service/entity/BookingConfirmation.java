@@ -22,6 +22,28 @@ public class BookingConfirmation {
     private LocalTime time;
     private String status;
 
+
+
+    private String clinicName;       // coming from Doctor service
+    private Float bookingAmount;     // coming from Booking table
+
+
+    public String getClinicName() {
+        return clinicName;
+    }
+
+    public void setClinicName(String clinicName) {
+        this.clinicName = clinicName;
+    }
+
+    public Float getBookingAmount() {
+        return bookingAmount;
+    }
+
+    public void setBookingAmount(Float bookingAmount) {
+        this.bookingAmount = bookingAmount;
+    }
+
     public String getStatus() {
         return status;
     }
