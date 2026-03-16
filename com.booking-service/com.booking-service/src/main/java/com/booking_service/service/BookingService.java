@@ -35,7 +35,9 @@ public class BookingService {
 
     @Autowired
     private PatientClient patientClient;
-
+// after payment --booking confirmed-kafka-
+@Autowired
+private BookingProducer bookingProducer;
 
     public BookingConfirmationDto createBooking(BookingConfirmationDto dto) {
 
@@ -242,6 +244,7 @@ public class BookingService {
 
         System.out.println("✅ Booking confirmed for ID: " + bookingId);
 
+        bookingProducer.publishBookingEvent(bookingId);
         return mapToDto(saved);
     }
 
