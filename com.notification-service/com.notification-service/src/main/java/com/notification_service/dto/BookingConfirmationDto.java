@@ -1,4 +1,4 @@
-package com.booking_service.dto;
+package com.notification_service.dto;
 
 
 import java.time.LocalDate;
