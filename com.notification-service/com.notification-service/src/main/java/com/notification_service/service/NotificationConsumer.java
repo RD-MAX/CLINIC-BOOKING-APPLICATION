@@ -27,7 +27,7 @@ public class NotificationConsumer {
     @KafkaListener(topics = "booking-confirmed", groupId = "notification-group")
     public void consume(String message) {
 
-        System.out.println("📩 Received Kafka message: " + message);
+        System.out.println("🔥 RAW MESSAGE FROM KAFKA: " + message);
 
         Long bookingId;
 
@@ -39,6 +39,9 @@ public class NotificationConsumer {
         }
 
         try {
+
+            System.out.println("📩 Processing booking ID: " + bookingId);
+
             // Fetch booking details from booking-service
             BookingConfirmationDto booking = bookingClient.getBookingById(bookingId);
 
@@ -50,6 +53,7 @@ public class NotificationConsumer {
             NotificationRequestDto notification = new NotificationRequestDto();
             notification.setDoctorName(booking.getDoctorName());
             notification.setPatientName(booking.getPatientName());
+            notification.setClinicName(booking.getClinicName());   // 🔥 add this
             notification.setDate(booking.getDate());
             notification.setTime(booking.getTime());
             notification.setEmail(booking.getEmail());
@@ -67,4 +71,5 @@ public class NotificationConsumer {
             ex.printStackTrace();
         }
     }
+
 }
