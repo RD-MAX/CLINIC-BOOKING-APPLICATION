@@ -40,7 +40,13 @@ public class SearchController {
     ) {
         LocalDate currentDate = LocalDate.now();
         List<SearchResultDto> result = new ArrayList<>();
-        List<Doctor> doctors = doctorsRepository.findBySpecializationAndArea(specialization, areaName);
+
+        System.out.println("Specialization: " + specialization);
+        System.out.println("AreaName: " + areaName);
+
+        List<Doctor> doctors = doctorsRepository.findBySpecializationAndArea_Name(specialization, areaName);
+
+        System.out.println("Doctors found: " + doctors.size());
 
         for (Doctor doctor : doctors) {
             SearchResultDto dto = new SearchResultDto();
@@ -49,26 +55,31 @@ public class SearchController {
             List<LocalTime> allTimeSlots = new ArrayList<>();
             List<DoctorAppointmentSchedule> schedules = doctor.getAppointmentSchedules();  // ✅ fixed
 
-            for (DoctorAppointmentSchedule schedule : schedules) {
-                LocalDate scheduleDate = schedule.getDate();
-                LocalTime now = LocalTime.now();
+            if (schedules != null) {
 
-                List<TimeSlots> timeSlots = timeSlotsRepository.getAllTimeSlots(schedule.getId());
+                for (DoctorAppointmentSchedule schedule : schedules) {
+                    LocalDate scheduleDate = schedule.getDate();
+                    LocalTime now = LocalTime.now();
 
-                for (TimeSlots ts : timeSlots) {
-                    LocalTime slotTime = ts.getTime();
+                    validDates.add(scheduleDate); // ✅ added so dates appear in response
 
-                    if (scheduleDate.isEqual(currentDate)) {
-                        if (slotTime.isAfter(now)) {
+                    List<TimeSlots> timeSlots = timeSlotsRepository.getAllTimeSlots(schedule.getId());
+
+                    for (TimeSlots ts : timeSlots) {
+                        LocalTime slotTime = ts.getTime();
+
+                        if (scheduleDate.isEqual(currentDate)) {
+                            if (slotTime.isAfter(now)) {
+                                allTimeSlots.add(slotTime);
+                            }
+                        }
+                        else if ( scheduleDate.isBefore(currentDate)){
+                            System.out.println("invalid date");
+                        }
+                        // If schedule is in the future
+                        else if (scheduleDate.isAfter(currentDate)) {   // ✅ fixed condition
                             allTimeSlots.add(slotTime);
                         }
-                    }
-                    else if ( scheduleDate.isBefore(currentDate)){
-                        System.out.println("invalid date");
-                    }
-                    // If schedule is in the future
-                    else if (scheduleDate.isAfter(currentDate)) {   // ✅ fixed condition
-                        allTimeSlots.add(slotTime);
                     }
                 }
             }
@@ -92,6 +103,6 @@ public class SearchController {
 
     @GetMapping("/get-doctor-by-id")
     public Doctor getDoctorById(@RequestParam long id) {   // ✅ fixed variable name
-        return doctorsRepository.findById(id).get();
+        return doctorsRepository.findById(id).orElse(null);
     }
 }
