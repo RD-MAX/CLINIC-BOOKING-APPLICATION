@@ -30,22 +30,49 @@ public class SmsService {
 
         initTwilio();
 
+        if (req.getPhone() == null || req.getPhone().trim().isEmpty()) {
+            System.out.println("⚠ SMS skipped: phone number missing");
+            return;
+        }
+
+        String phone = req.getPhone().trim();
+
+        // 🔥 Ensure international format
+        if (!phone.startsWith("+")) {
+            phone = "+91" + phone;
+        }
+
         String body =
                 "Appointment Confirmed\n" +
                         "Doctor: " + req.getDoctorName() +
                         "\nDate: " + req.getDate() +
                         "\nTime: " + req.getTime();
 
+        System.out.println("📱 Sending SMS to: " + phone);
+
         Message.creator(
-                new PhoneNumber(req.getPhone()),      // Patient phone
-                new PhoneNumber(twilioPhone),         // Twilio number
+                new PhoneNumber(phone),       // Patient phone
+                new PhoneNumber(twilioPhone), // Twilio number
                 body
         ).create();
+
+        System.out.println("✅ SMS sent successfully");
     }
 
     public void sendWhatsApp(NotificationRequestDto req) {
 
         initTwilio();
+
+        if (req.getPhone() == null || req.getPhone().trim().isEmpty()) {
+            System.out.println("⚠ WhatsApp skipped: phone number missing");
+            return;
+        }
+
+        String phone = req.getPhone().trim();
+
+        if (!phone.startsWith("+")) {
+            phone = "+91" + phone;
+        }
 
         String body =
                 "Hello " + req.getPatientName() +
@@ -54,10 +81,14 @@ public class SmsService {
                         "\nDate: " + req.getDate() +
                         "\nTime: " + req.getTime();
 
+        System.out.println("💬 Sending WhatsApp to: " + phone);
+
         Message.creator(
-                new PhoneNumber("whatsapp:" + req.getPhone()),  // Patient WhatsApp
-                new PhoneNumber(whatsappNumber),                // Twilio WhatsApp number
+                new PhoneNumber("whatsapp:" + phone),
+                new PhoneNumber(whatsappNumber),
                 body
         ).create();
+
+        System.out.println("✅ WhatsApp sent successfully");
     }
 }

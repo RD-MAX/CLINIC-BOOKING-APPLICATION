@@ -15,6 +15,11 @@ public class EmailService {
 
     public void sendEmail(NotificationRequestDto req){
 
+        if(req.getEmail() == null || req.getEmail().trim().isEmpty()){
+            System.out.println("⚠ Email skipped: email missing");
+            return;
+        }
+
         SimpleMailMessage message = new SimpleMailMessage();
 
         message.setTo(req.getEmail());
@@ -30,5 +35,7 @@ public class EmailService {
         );
 
         mailSender.send(message);
+
+        System.out.println("📧 Email sent to " + req.getEmail());
     }
 }

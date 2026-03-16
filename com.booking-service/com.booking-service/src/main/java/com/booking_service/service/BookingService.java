@@ -35,9 +35,10 @@ public class BookingService {
 
     @Autowired
     private PatientClient patientClient;
-// after payment --booking confirmed-kafka-
-@Autowired
-private BookingProducer bookingProducer;
+
+    // after payment --booking confirmed-kafka-
+    @Autowired
+    private BookingProducer bookingProducer;
 
     public BookingConfirmationDto createBooking(BookingConfirmationDto dto) {
 
@@ -90,22 +91,20 @@ private BookingProducer bookingProducer;
         }
 
         // 4️⃣ Save basic booking in BOOKINGS table
-        Booking rawBooking = new Booking();               // ✅ renamed variable
+        Booking rawBooking = new Booking();
         rawBooking.setDoctorId(dto.getDoctorId());
         rawBooking.setPatientId(dto.getPatientId());
-        rawBooking.setDate(dto.getDate());          // ✅ store date for pending booking
-        rawBooking.setTime(dto.getTime());          // ✅ store time for pending booking
-        rawBooking.setStatus("PENDING_PAYMENT");    // ✅ pending until payment
+        rawBooking.setDate(dto.getDate());
+        rawBooking.setTime(dto.getTime());
+        rawBooking.setStatus("PENDING_PAYMENT");
         rawBooking.setAmount(dto.getBookingAmount());
-
-
 
         bookingRepository.save(rawBooking);
 
         // ❌ Do NOT save into BOOKING_CONFIRMATIONS here (payment not done yet)
         // confirmation will be created after payment success
 
-        dto.setStatus("PENDING_PAYMENT");           // ✅ send pending status to frontend
+        dto.setStatus("PENDING_PAYMENT");
         return dto;
     }
 
@@ -140,7 +139,9 @@ private BookingProducer bookingProducer;
         dto.setPatientName(patient.getName());
         dto.setAddress(doctor.getAddress());
 
-
+        // 🔥 NEW: send patient contact info for notification service
+        dto.setEmail(patient.getEmail());
+        dto.setPhone(patient.getPhone());
 
         // 🔥 NEW: extra fields in response
         dto.setClinicName(doctor.getClinicName());
@@ -172,7 +173,6 @@ private BookingProducer bookingProducer;
     }
 
     // after payment--status changed to --booked-----------
-
 
     // 🔥 NEW: Confirm booking using bookingId (used by payment-service)
     @Transactional
@@ -215,7 +215,7 @@ private BookingProducer bookingProducer;
             rawBooking.setStatus("FAILED");
             bookingRepository.save(rawBooking);
 
-            return null;  // 🔥 IMPORTANT: stop here
+            return null;
         }
 
         // 4️⃣ Normal confirmation flow
@@ -223,7 +223,6 @@ private BookingProducer bookingProducer;
         Patient patient = patientClient.getPatientById(rawBooking.getPatientId());
 
         BookingConfirmation confirmation = new BookingConfirmation();
-        confirmation.setId(rawBooking.getId()); // same ID
         confirmation.setDoctorId(rawBooking.getDoctorId());
         confirmation.setPatientId(rawBooking.getPatientId());
         confirmation.setDate(rawBooking.getDate());
@@ -245,34 +244,9 @@ private BookingProducer bookingProducer;
         System.out.println("✅ Booking confirmed for ID: " + bookingId);
 
         bookingProducer.publishBookingEvent(bookingId);
+
         return mapToDto(saved);
     }
-
-//    @Transactional
-//    public BookingConfirmationDto confirmBooking(BookingConfirmationDto dto) {
-//
-//        Doctor doctor = doctorClient.getDoctorById(dto.getDoctorId());
-//        Patient patient = patientClient.getPatientById(dto.getPatientId());
-//
-//        // 1️⃣ Save confirmed booking
-//        BookingConfirmation confirmation = mapToEntity(dto);
-//        confirmation.setStatus("confirmed");
-//        confirmation.setAddress(doctor.getAddress());
-//        confirmation.setDoctorName(doctor.getName());
-//        confirmation.setPatientName(patient.getName());
-//
-//        confirmation.setClinicName(doctor.getClinicName());
-//        confirmation.setBookingAmount(dto.getBookingAmount());
-//
-//        BookingConfirmation saved = bookingConfirmationRepository.save(confirmation);
-//
-//        // 2️⃣ Delete pending booking
-//        bookingRepository.deleteByDoctorIdAndPatientIdAndStatus(
-//                dto.getDoctorId(), dto.getPatientId(), "PENDING_PAYMENT"
-//        );
-//
-//        return mapToDto(saved);
-//    }
 
     // 🔁 Mappers
     private BookingConfirmation mapToEntity(BookingConfirmationDto dto) {
@@ -294,10 +268,13 @@ private BookingProducer bookingProducer;
         dto.setTime(booking.getTime());
         dto.setStatus(booking.getStatus());
 
-
         dto.setClinicName(booking.getClinicName());
         dto.setBookingAmount(booking.getBookingAmount());
 
+        // 🔥 NEW: fetch patient contact details for notifications
+        Patient patient = patientClient.getPatientById(booking.getPatientId());
+        dto.setEmail(patient.getEmail());
+        dto.setPhone(patient.getPhone());
 
         return dto;
     }

@@ -32,8 +32,8 @@ public class Patient {
     @Column(name="email" ,nullable=false)
     private String email;
 
-    @Column(name="contact" ,nullable=false)
-    private String contact;
+    @Column(name="phone" ,nullable=false)
+    private String phone;
     @Column(name="age" ,nullable=false)
     private int age;
     @Column(name="gender" ,nullable=false)
@@ -56,12 +56,12 @@ public class Patient {
         this.name = name;
     }
 
-    public String getContact() {
-        return contact;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setContact(String contact) {
-        this.contact = contact;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public String getEmail() {

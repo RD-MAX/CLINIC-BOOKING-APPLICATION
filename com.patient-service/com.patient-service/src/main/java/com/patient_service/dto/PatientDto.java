@@ -4,7 +4,7 @@ public class PatientDto {
     private Long id;
     private String name;
     private String email;
-    private String contact;
+    private String phone;
     private int age;
     private String gender;
 
@@ -48,11 +48,11 @@ public class PatientDto {
         this.age = age;
     }
 
-    public String getContact() {
-        return contact;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setContact(String contact) {
-        this.contact = contact;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 }

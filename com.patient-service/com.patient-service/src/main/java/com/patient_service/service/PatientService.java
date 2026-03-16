@@ -55,7 +55,7 @@ public class PatientService {
         dto.setId(patient.getId());
         dto.setName(patient.getName());
         dto.setEmail(patient.getEmail());
-        dto.setContact(patient.getContact());
+        dto.setPhone(patient.getPhone());
         dto.setAge(patient.getAge());
         dto.setGender(patient.getGender());
         return dto;
@@ -65,7 +65,7 @@ public class PatientService {
         Patient patient = new Patient();
         patient.setName(dto.getName());
         patient.setEmail(dto.getEmail());
-        patient.setContact(dto.getContact());
+        patient.setPhone(dto.getPhone());
         patient.setAge(dto.getAge());
         patient.setGender(dto.getGender());
         return patient;
