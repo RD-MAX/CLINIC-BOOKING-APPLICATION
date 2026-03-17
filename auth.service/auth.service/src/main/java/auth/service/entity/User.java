@@ -15,7 +15,7 @@ public class User {
     private String username;
     @Column(name="email", nullable = false ,unique = true)
     private String email;
-    @Column(name="password", nullable = false,unique = true)
+    @Column(name="password", nullable = false)
     private String password;
     @Column(name="role", nullable = false)
     private String role; // ADMIN / DOCTOR / PATIENT
