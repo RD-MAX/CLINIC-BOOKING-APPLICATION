@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 public class AuthService {
 
+    @Autowired
+    private JwtService jwtService;
 
     @Autowired
     private UserRepository userRepository;
@@ -56,7 +58,7 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(userDto.getPassword())); // encoding the password in user
 
         // FOR ROLE
-        user.setRole(userDto.getRole());  // ✅ FIXED (dynamic role)
+        user.setRole("ROLE_" + userDto.getRole());  // ✅ FIXED (dynamic role)
 
         userRepository.save(user); // saving all user details + encrypted pass in database
 
@@ -88,8 +90,18 @@ public class AuthService {
             Authentication authenticate = authenticationManager.authenticate(token);
 
             if(authenticate.isAuthenticated()){
-                response.setMessage("user authenticated - login successful"); // ✅ FIXED
-                response.setData("Login success"); // ✅ FIXED
+
+                String username = userDto.getUsername(); // correct way
+
+                String role = authenticate.getAuthorities()
+                        .iterator()
+                        .next()
+                        .getAuthority();
+
+                String jwtToken = jwtService.generateToken(username, role);
+
+                response.setMessage("user authenticated - login successful");
+                response.setData(jwtToken); // ✅ RETURN TOKEN HERE
                 response.setStatus(200);
 
                 return new ResponseEntity<>(response, HttpStatusCode.valueOf(response.getStatus()));

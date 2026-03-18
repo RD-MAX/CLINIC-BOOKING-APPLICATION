@@ -7,9 +7,11 @@ import auth.service.repository.UserRepository;
 import auth.service.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -49,4 +51,9 @@ return new ResponseEntity<>(response, HttpStatusCode.valueOf(response.getStatus(
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
+    public ResponseEntity<String> currentUserProfile(
+            @AuthenticationPrincipal org.springframework.security.core.userdetails.User user){
+
+        return new ResponseEntity<>(user.getUsername(), HttpStatus.OK);
+    }
 }
