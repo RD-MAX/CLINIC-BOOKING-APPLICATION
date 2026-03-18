@@ -1,7 +1,7 @@
 package auth.service.config;
 
 //import com.examplesecurity.securityexample.service.CustomerUserDetailsService;
-//import com.examplesecurity.securityexample.service.JwtFilter;
+import auth.service.filter.JwtFilter;
 import auth.service.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -14,27 +14,43 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-
-import static java.util.Base64.getEncoder;
-//import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-//import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-//import static org.springframework.security.authorization.SingleResultAuthorizationManager.permitAll;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 public class AuthConfig {
 
+
+    @Autowired
+    private JwtFilter filter;
+
+
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception
-    {
-        //incoming requests
-        http.csrf(csrf->csrf.disable()).authorizeHttpRequests(req ->{
-            req.requestMatchers("/api/v1/auth/**").permitAll().anyRequest().authenticated();
-        });
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+        String[] publicEndpoints = {
+                "/api/v1/auth/**"   // ✅ FIX: allow ALL auth endpoints (login/signup/register)
+        };
+
+        http
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(req -> {
+                    req.requestMatchers(publicEndpoints)
+                            .permitAll()
+                            .requestMatchers("/api/v1/admin/dashboard")
+                             .hasAnyRole("ADMIN")
+                            .requestMatchers("/api/v1/doctor/dashboard")
+                            .hasAnyRole("ADMIN","DOCTOR")
+                            .requestMatchers("/api/v1/patient/dashboard")
+                            .hasAnyRole("ADMIN","PATIENT")
+                            .anyRequest()
+                            .authenticated();
+                })
+                // ✅ JWT filter runs only AFTER auth endpoints are permitted
+                .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
+                .authenticationProvider(authProvider());
 
         return http.build();
     }
-
-
     @Bean
     public PasswordEncoder passwordEncoder() {
 

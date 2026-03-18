@@ -21,6 +21,8 @@ public class DoctorController {
     @Autowired
     private DoctorsRepository doctorsRepository;
 
+
+
   @PostMapping("/save-doctor")
     public ResponseEntity<Doctor> saveDoctor(@RequestBody Doctor doctor) {
 

@@ -1,6 +1,8 @@
 package com.doctor_service.repository;
 
 import com.doctor_service.entity.Doctor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,8 +17,20 @@ public interface DoctorsRepository extends JpaRepository<Doctor, Long> {
         WHERE LOWER(d.specialization) = LOWER(:specialization)
         AND LOWER(a.name) = LOWER(:areaName)
     """)
-    List<Doctor> findBySpecializationAndArea_Name(
-            @Param("specialization") String specialization,
-            @Param("areaName") String areaName
+    Page<Doctor> findBySpecializationAndArea_Name(
+            String specialization,
+            String areaName,
+            Pageable pageable
     );
+
+    Page<Doctor> findBySpecialization(
+            String specialization,
+            Pageable pageable
+    );
+
+    Page<Doctor> findByArea_Name(
+            String areaName,
+            Pageable pageable
+    );
+
 }
