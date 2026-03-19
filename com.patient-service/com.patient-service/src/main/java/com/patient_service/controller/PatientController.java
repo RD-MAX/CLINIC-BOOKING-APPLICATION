@@ -4,13 +4,17 @@ import com.patient_service.dto.PatientDto;
 import com.patient_service.entity.Patient;
 import com.patient_service.repository.PatientRepository;
 import com.patient_service.service.PatientService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/patients")
+@Validated
 public class PatientController {
 
 @Autowired
@@ -19,19 +23,42 @@ public class PatientController {
     private PatientService patientService;
 
 
-@PostMapping("/save-patient")
-    public PatientDto savePatient(@RequestBody PatientDto dto){
+@PostMapping("/save")
+    public PatientDto savePatient(@Valid @RequestBody PatientDto dto){
     return  patientService.savePatient(dto);   // returns 200 OK by default;
 }
 
-@GetMapping("/getpatientbyid")
-    public PatientDto getPatientById(@RequestParam  Long id){
+@GetMapping("/{id}")
+    public PatientDto getPatientById(@PathVariable  Long id){
     return patientService.getPatientById(id);
 }
 
-@GetMapping("/getallpatients")
+@GetMapping("/all")
     public List< PatientDto> getAllPatients() {
 return patientService.getAllPatients();
 }
+
+
+    @GetMapping("/search")
+    public Map<String, Object> searchPatients(
+
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String gender,
+
+            @RequestParam(defaultValue = "0") int pageNo,
+            @RequestParam(defaultValue = "5") int pageSize,
+
+            @RequestParam(defaultValue = "asc") String sortDir,
+            @RequestParam(defaultValue = "name") String sortBy
+    ) {
+        return patientService.searchPatients(
+                name,
+                gender,
+                pageNo,
+                pageSize,
+                sortDir,
+                sortBy
+        );
+    }
 
 }

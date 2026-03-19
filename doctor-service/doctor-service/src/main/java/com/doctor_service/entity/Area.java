@@ -1,6 +1,8 @@
 package com.doctor_service.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "area")
@@ -10,8 +12,21 @@ public class Area {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @NotBlank(message = "area is required")
     @Column(name = "name", nullable = false)
     private String name;
+
+    @ManyToOne
+    @JoinColumn(name = "city_id")  // FK column
+    private City city;
+
+    public City getCity() {
+        return city;
+    }
+
+    public void setCity(City city) {
+        this.city = city;
+    }
 
     public String getName() {
         return name;

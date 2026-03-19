@@ -1,21 +1,24 @@
 package com.doctor_service.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
 public class SearchResultDto {
 
-    private long id;//doctor id
+    private long id;
     private String name;
     private String specialization;
     private String qualification;
     private String area;
     private String city;
-    private List<LocalDate> dates;//appointment date
+    private List<LocalDate> dates;
     private List<LocalTime> timeSlots;
-    private String url;// image url--photo of doctor
-
+    private String url;
 
     public long getId() {
         return id;
