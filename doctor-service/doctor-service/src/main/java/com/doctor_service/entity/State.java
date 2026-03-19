@@ -1,5 +1,6 @@
 package com.doctor_service.entity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "state")
@@ -8,7 +9,7 @@ public class State {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
-
+    @NotNull(message = "state is required")
     @Column(name = "name", nullable = false)
     private String name;
 

@@ -1,6 +1,7 @@
 package com.doctor_service.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalTime;
 
@@ -12,6 +13,7 @@ public class TimeSlots {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @NotNull(message = "Time is required")
     @Column(name="time")
     private LocalTime time;
 

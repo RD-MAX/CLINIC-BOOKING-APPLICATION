@@ -6,6 +6,7 @@ import com.doctor_service.entity.DoctorAppointmentSchedule;
 import com.doctor_service.entity.TimeSlots;
 import com.doctor_service.repository.DoctorsRepository;
 import com.doctor_service.service.S3Service;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class DoctorController {
 
 
   @PostMapping("/save-doctor")
-    public ResponseEntity<Doctor> saveDoctor(@RequestBody Doctor doctor) {
+    public ResponseEntity<Doctor> saveDoctor(@Valid @RequestBody Doctor doctor) {
 
         if(doctor.getAppointmentSchedules() !=null){
             doctor.getAppointmentSchedules().forEach(schedule ->
