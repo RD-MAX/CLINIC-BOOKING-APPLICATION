@@ -1,11 +1,9 @@
 package com.doctor_service.controller;
+import com.doctor_service.entity.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import com.doctor_service.dto.SearchResultDto;
-import com.doctor_service.entity.Doctor;
-import com.doctor_service.entity.DoctorAppointmentSchedule;
-import com.doctor_service.entity.TimeSlots;
 import com.doctor_service.repository.DoctorAppointmentScheduleRepository;
 import com.doctor_service.repository.DoctorsRepository;
 import com.doctor_service.repository.TimeSlotsRepository;
@@ -19,10 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -44,8 +39,6 @@ public class SearchController {
     @Autowired
     private DoctorAppointmentScheduleRepository doctorAppointmentScheduleRepository;
 
-    @Autowired
-    private DoctorService doctorService;
 
     @GetMapping("/search-doctor")
     public ResponseEntity<?> searchDoctors(
@@ -82,4 +75,34 @@ public class SearchController {
     public Doctor getDoctorById(@RequestParam long id) {   // ✅ fixed variable name
         return doctorsRepository.findById(id).orElse(null);
     }
+
+
+
+
+    private final DoctorService doctorService;
+
+    public SearchController(DoctorService doctorService) {
+        this.doctorService = doctorService;
+    }
+
+    // ✅ 1. GET STATES
+    @GetMapping("/states")
+    public List<State> getStates() {
+        return doctorService.getAllStates();
+    }
+
+    // ✅ 2. GET CITIES BY STATE
+    @GetMapping("/cities/{stateId}")
+    public List<City> getCities(@PathVariable Long stateId) {
+        return doctorService.getCitiesByState(stateId);
+    }
+
+    // ✅ 3. GET AREAS BY CITY
+    @GetMapping("/areas/{cityId}")
+    public List<Area> getAreas(@PathVariable Long cityId) {
+        return doctorService.getAreasByCity(cityId);
+    }
+
+
+
 }

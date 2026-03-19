@@ -1,11 +1,8 @@
 package com.doctor_service.service;
 
 import com.doctor_service.dto.SearchResultDto;
-import com.doctor_service.entity.Doctor;
-import com.doctor_service.entity.DoctorAppointmentSchedule;
-import com.doctor_service.entity.TimeSlots;
-import com.doctor_service.repository.DoctorsRepository;
-import com.doctor_service.repository.TimeSlotsRepository;
+import com.doctor_service.entity.*;
+import com.doctor_service.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +24,21 @@ public class DoctorService {
 
     @Autowired
     private TimeSlotsRepository timeSlotsRepository;
+
+
+
+
+    private final StateRepository stateRepository;
+    private final CityRepository cityRepository;
+    private final AreaRepository areaRepository;
+
+    public DoctorService(StateRepository stateRepository,
+                           CityRepository cityRepository,
+                           AreaRepository areaRepository) {
+        this.stateRepository = stateRepository;
+        this.cityRepository = cityRepository;
+        this.areaRepository = areaRepository;
+    }
 
 
     public Object searchDoctors(String specialization,
@@ -146,4 +158,23 @@ public class DoctorService {
                 "last", page.isLast()
         );
     }
+
+
+
+    // ✅ Get all states
+    public List<State> getAllStates() {
+        return stateRepository.findAll();
+    }
+
+    // ✅ Get cities by stateId
+    public List<City> getCitiesByState(Long stateId) {
+        return cityRepository.findByStateId(stateId);
+    }
+
+    // ✅ Get areas by cityId
+    public List<Area> getAreasByCity(Long cityId) {
+        return areaRepository.findByCityId(cityId);
+    }
+
+
 }
