@@ -10,6 +10,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/patients")
@@ -36,5 +37,28 @@ public class PatientController {
     public List< PatientDto> getAllPatients() {
 return patientService.getAllPatients();
 }
+
+
+    @GetMapping("/search")
+    public Map<String, Object> searchPatients(
+
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String gender,
+
+            @RequestParam(defaultValue = "0") int pageNo,
+            @RequestParam(defaultValue = "5") int pageSize,
+
+            @RequestParam(defaultValue = "asc") String sortDir,
+            @RequestParam(defaultValue = "name") String sortBy
+    ) {
+        return patientService.searchPatients(
+                name,
+                gender,
+                pageNo,
+                pageSize,
+                sortDir,
+                sortBy
+        );
+    }
 
 }
