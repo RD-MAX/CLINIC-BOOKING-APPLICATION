@@ -1,11 +1,5 @@
 package com.booking_service.dto;
 
-import com.doctor_service.entity.Area;
-import com.doctor_service.entity.City;
-import com.doctor_service.entity.DoctorAppointmentSchedule;
-import com.doctor_service.entity.State;
-import jakarta.persistence.*;
-
 import java.util.List;
 
 public class Doctor {

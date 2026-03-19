@@ -1,6 +1,4 @@
 package com.booking_service.dto;
-import com.doctor_service.entity.DoctorAppointmentSchedule;
-import jakarta.persistence.*;
 
 import java.time.LocalTime;
 
