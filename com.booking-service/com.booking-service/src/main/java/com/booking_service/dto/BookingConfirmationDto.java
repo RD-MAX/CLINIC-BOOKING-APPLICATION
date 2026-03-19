@@ -1,44 +1,47 @@
 package com.booking_service.dto;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+@Table(name="booking_confirmations")
 public class BookingConfirmationDto {
+
     private long id;
-    private long doctorId;
-    private long patientId;
 
-    private String email;
-    private String phone;
+    @NotNull(message = "Doctor ID is required")
+    @Positive(message = "Doctor ID must be valid")
+    private Long doctorId;
 
-    public String getEmail() {
-        return email;
-    }
+    @NotNull(message = "Patient ID is required")
+    @Positive(message = "Patient ID must be valid")
+    private Long patientId;
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    @NotNull(message = "Booking date is required")
+    @FutureOrPresent(message = "Booking date must be today or future")
+    private LocalDate date;
 
-    public String getPhone() {
-        return phone;
-    }
+    @NotNull(message = "Booking time is required")
+    private LocalTime time;
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
+    @NotNull(message = "Booking amount is required")
+    @Positive(message = "Amount must be greater than 0")
+    private Float bookingAmount;
 
+    // optional fields (no validation needed)
     private String doctorName;
     private String patientName;
     private String address;
-    private LocalDate date;
-    private LocalTime time;
     private String status;
-
-
-    // 🔥 new fields
     private String clinicName;
-    private Float bookingAmount;
+    private String email;
+    private String phone;
+
+    // getters & setters
 
     public String getClinicName() {
         return clinicName;
@@ -72,14 +75,28 @@ public class BookingConfirmationDto {
         this.id = id;
     }
 
-
-
     public LocalTime getTime() {
         return time;
     }
 
     public void setTime(LocalTime time) {
         this.time = time;
+    }
+
+    public long getDoctorId() {
+        return doctorId;
+    }
+
+    public void setDoctorId(long doctorId) {
+        this.doctorId = doctorId;
+    }
+
+    public long getPatientId() {
+        return patientId;
+    }
+
+    public void setPatientId(long patientId) {
+        this.patientId = patientId;
     }
 
     public LocalDate getDate() {
@@ -114,19 +131,27 @@ public class BookingConfirmationDto {
         this.doctorName = doctorName;
     }
 
-    public long getPatientId() {
-        return patientId;
+    public void setDoctorId(Long doctorId) {
+        this.doctorId = doctorId;
     }
 
-    public void setPatientId(long patientId) {
+    public void setPatientId(Long patientId) {
         this.patientId = patientId;
     }
 
-    public long getDoctorId() {
-        return doctorId;
+    public String getEmail() {
+        return email;
     }
 
-    public void setDoctorId(long doctorId) {
-        this.doctorId = doctorId;
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 }

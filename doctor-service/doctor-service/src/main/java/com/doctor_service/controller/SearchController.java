@@ -71,8 +71,8 @@ public class SearchController {
         );
     }
 
-    @GetMapping("/get-doctor-by-id")
-    public Doctor getDoctorById(@RequestParam long id) {   // ✅ fixed variable name
+    @GetMapping("/doctor/{id}")
+    public Doctor getDoctorById(@PathVariable long id) {   // ✅ fixed variable name
         return doctorsRepository.findById(id).orElse(null);
     }
 

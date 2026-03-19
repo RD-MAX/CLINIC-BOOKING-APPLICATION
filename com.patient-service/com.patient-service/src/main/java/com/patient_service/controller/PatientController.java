@@ -28,7 +28,7 @@ public class PatientController {
     return  patientService.savePatient(dto);   // returns 200 OK by default;
 }
 
-@GetMapping("/{id}")
+@GetMapping("/patient/{id}")
     public PatientDto getPatientById(@PathVariable  Long id){
     return patientService.getPatientById(id);
 }

@@ -8,16 +8,22 @@ import com.booking_service.entity.Booking;
 import com.booking_service.entity.BookingConfirmation;
 import com.booking_service.repository.BookingConfirmationRepository;
 import com.booking_service.repository.BookingRepository;
-import com.doctor_service.entity.Doctor;
-import com.doctor_service.entity.DoctorAppointmentSchedule;
-import com.doctor_service.entity.TimeSlots;
-import com.patient_service.entity.Patient;
+import com.booking_service.dto.Doctor;
+import com.booking_service.dto.DoctorAppointmentSchedule;
+import com.booking_service.dto.TimeSlots;
+import com.booking_service.dto.Patient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -108,6 +114,10 @@ public class BookingService {
         return dto;
     }
 
+
+
+
+
     public BookingConfirmationDto getBookingById(Long id) {
 
         // 1️⃣ First try to fetch from CONFIRMED bookings
@@ -135,7 +145,7 @@ public class BookingService {
 
         // ✅ Enriched fields
         dto.setDoctorName(doctor.getName());
-        dto.setClinicName(doctor.getName());
+        dto.setClinicName(doctor.getClinicName());
         dto.setPatientName(patient.getName());
         dto.setAddress(doctor.getAddress());
 
@@ -150,29 +160,103 @@ public class BookingService {
         return dto;
     }
 
-    public List<BookingConfirmationDto> getBookingsByPatientId(Long patientId) {
-        List<BookingConfirmation> bookings =
-                bookingConfirmationRepository.findByPatientId(patientId);
+    public Map<String, Object> getBookingsByPatientId(
+            Long patientId,
+            String status,
+            int pageNo,
+            int pageSize,
+            String sortDir,
+            String sortBy
+    ) {
+
+        Sort sort = sortDir.equalsIgnoreCase("asc") ?
+                Sort.by(sortBy).ascending() :
+                Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+
+        Page<BookingConfirmation> page;
+
+        if (status != null) {
+            page = bookingConfirmationRepository
+                    .findByPatientIdAndStatus(patientId, status, pageable);
+        } else {
+            page = bookingConfirmationRepository
+                    .findByPatientId(patientId, pageable);
+        }
 
         List<BookingConfirmationDto> result = new ArrayList<>();
-        for (BookingConfirmation b : bookings) {
-            result.add(mapToDto(b));
+
+        for (BookingConfirmation booking : page.getContent()) {
+            result.add(mapToDto(booking));
         }
-        return result;
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("content", result);
+        response.put("page", page.getNumber());
+        response.put("size", page.getSize());
+        response.put("totalElements", page.getTotalElements());
+        response.put("totalPages", page.getTotalPages());
+        response.put("last", page.isLast());
+
+        return response;
     }
 
-    public List<BookingConfirmationDto> getBookingsByDoctorId(Long doctorId) {
-        List<BookingConfirmation> bookings =
-                bookingConfirmationRepository.findByDoctorId(doctorId);
 
+
+
+
+
+
+    public Map<String, Object> getBookingsByDoctorId(
+            Long doctorId,
+            String status,
+            int pageNo,
+            int pageSize,
+            String sortDir,
+            String sortBy
+    ) {
+
+        // ✅ sorting
+        Sort sort = sortDir.equalsIgnoreCase("asc") ?
+                Sort.by(sortBy).ascending() :
+                Sort.by(sortBy).descending();
+
+        // ✅ pagination
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+
+        Page<BookingConfirmation> page;
+
+        // ✅ filtering
+        if (status != null) {
+            page = bookingConfirmationRepository
+                    .findByDoctorIdAndStatus(doctorId, status, pageable);
+        } else {
+            page = bookingConfirmationRepository
+                    .findByDoctorId(doctorId, pageable);
+        }
+        List<BookingConfirmation> bookings = page.getContent();
+
+        // ✅ convert entity -> DTO
         List<BookingConfirmationDto> result = new ArrayList<>();
-        for (BookingConfirmation b : bookings) {
-            result.add(mapToDto(b));
+
+        for (BookingConfirmation booking : bookings) {
+            result.add(mapToDto(booking));
         }
-        return result;
+        // ✅ response
+        Map<String, Object> response = new HashMap<>();
+        response.put("content", result);
+        response.put("page", page.getNumber());
+        response.put("size", page.getSize());
+        response.put("totalElements", page.getTotalElements());
+        response.put("totalPages", page.getTotalPages());
+        response.put("last", page.isLast());
+
+        return response;
     }
 
-    // after payment--status changed to --booked-----------
+
+
 
     // 🔥 NEW: Confirm booking using bookingId (used by payment-service)
     @Transactional

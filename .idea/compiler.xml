@@ -11,6 +11,7 @@
         <module name="com.patient-service" />
         <module name="com.notification-service" />
         <module name="doctor-service" />
+        <module name="booking-service" />
         <module name="auth.service" />
         <module name="eureka-server" />
       </profile>
@@ -22,6 +23,7 @@
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="auth.service" options="-parameters" />
+      <module name="booking-service" options="-parameters" />
       <module name="com.booking-service" options="-parameters" />
       <module name="com.notification-service" options="-parameters" />
       <module name="com.patient-service" options="-parameters" />
