@@ -1,6 +1,7 @@
 package com.doctor_service.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 
@@ -12,7 +13,7 @@ public class City {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @NotNull(message = "city is required")
+    @NotBlank(message = "city is required")
     @Column(name = "name", nullable = false)
     private String name;
 

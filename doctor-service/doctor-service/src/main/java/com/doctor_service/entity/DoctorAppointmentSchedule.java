@@ -1,7 +1,9 @@
 package com.doctor_service.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -17,14 +19,15 @@ public class DoctorAppointmentSchedule {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "doctor_id")
-    @JsonBackReference
-    @NotNull(message = "Doctor is required")
+    //    @JsonBackReference
+    @JsonIgnore
     private Doctor doctor;
 
     @OneToMany(mappedBy = "doctorAppointmentSchedule", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference
+//    @JsonManagedReference
+    @Valid
     @NotEmpty(message = "Time slots cannot be empty")
     private List<TimeSlots> timeSlots;
 

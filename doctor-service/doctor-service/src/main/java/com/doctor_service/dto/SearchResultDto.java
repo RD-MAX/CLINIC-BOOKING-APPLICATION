@@ -10,25 +10,15 @@ import java.util.List;
 
 public class SearchResultDto {
 
-    private long id;//doctor id
-   @NotBlank(message  ="name required")
+    private long id;
     private String name;
-    @NotBlank(message  ="specialization required")
     private String specialization;
-    @NotBlank(message  ="qualification required")
     private String qualification;
-    @NotBlank(message  ="area name required")
     private String area;
-    @NotBlank(message  ="city name required")
     private String city;
-    @NotEmpty(message = "At least one date is required")
-    private List<LocalDate> dates;//appointment date
-    @NotEmpty(message = "Time slots cannot be empty")
+    private List<LocalDate> dates;
     private List<LocalTime> timeSlots;
-    @NotBlank(message  ="image url required")
-    @Size(max = 2000, message = "URL too long")
-    private String url;// image url--photo of doctor
-
+    private String url;
 
     public long getId() {
         return id;

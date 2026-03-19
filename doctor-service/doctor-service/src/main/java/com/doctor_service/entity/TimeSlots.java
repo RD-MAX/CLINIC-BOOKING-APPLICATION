@@ -1,6 +1,8 @@
 package com.doctor_service.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalTime;
@@ -19,7 +21,8 @@ public class TimeSlots {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "appointment_schedule_id")
-    @JsonBackReference
+//    @JsonBackReference
+    @JsonIgnore
     private DoctorAppointmentSchedule doctorAppointmentSchedule;
 
     public DoctorAppointmentSchedule getDoctorAppointmentSchedule() {

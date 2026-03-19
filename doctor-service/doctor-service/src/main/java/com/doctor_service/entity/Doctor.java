@@ -1,7 +1,9 @@
 package com.doctor_service.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 
 import java.util.List;
@@ -72,7 +74,9 @@ public class Doctor {
 
     // ================== RELATION ==================
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference
+    @Valid
+//    @JsonManagedReference
+
     private List<DoctorAppointmentSchedule> appointmentSchedules;
 
     // ================== GETTERS & SETTERS ==================
