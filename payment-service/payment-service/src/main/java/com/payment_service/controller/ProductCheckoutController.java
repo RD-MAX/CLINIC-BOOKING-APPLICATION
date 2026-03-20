@@ -66,7 +66,7 @@ public class ProductCheckoutController {
 
 
 //webhook controller
-@PostMapping("/webhook")
+@PostMapping(value = "/webhook", consumes = "application/json")
 public ResponseEntity<String> handleWebhook(
         @RequestBody String payload,
         @RequestHeader("Stripe-Signature") String sigHeader) {
