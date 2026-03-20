@@ -1,6 +1,4 @@
 package com.booking_service.dto;
-
-
 public class Patient {
 
     private Long id;

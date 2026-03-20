@@ -1,7 +1,5 @@
 package com.doctor_service.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
@@ -81,41 +79,101 @@ public class Doctor {
 
     // ================== GETTERS & SETTERS ==================
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getSpecialization() { return specialization; }
-    public void setSpecialization(String specialization) { this.specialization = specialization; }
+    public String getName() {
+        return name;
+    }
 
-    public String getQualification() { return qualification; }
-    public void setQualification(String qualification) { this.qualification = qualification; }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public String getExperience() { return experience; }
-    public void setExperience(String experience) { this.experience = experience; }
+    public String getSpecialization() {
+        return specialization;
+    }
 
-    public String getContact() { return contact; }
-    public void setContact(String contact) { this.contact = contact; }
+    public void setSpecialization(String specialization) {
+        this.specialization = specialization;
+    }
 
-    public String getUrl() { return url; }
-    public void setUrl(String url) { this.url = url; }
+    public String getQualification() {
+        return qualification;
+    }
 
-    public State getState() { return state; }
-    public void setState(State state) { this.state = state; }
+    public void setQualification(String qualification) {
+        this.qualification = qualification;
+    }
 
-    public City getCity() { return city; }
-    public void setCity(City city) { this.city = city; }
+    public String getExperience() {
+        return experience;
+    }
 
-    public Area getArea() { return area; }
-    public void setArea(Area area) { this.area = area; }
+    public void setExperience(String experience) {
+        this.experience = experience;
+    }
 
-    public String getClinicName() { return clinicName; }
-    public void setClinicName(String clinicName) { this.clinicName = clinicName; }
+    public String getContact() {
+        return contact;
+    }
 
-    public String getAddress() { return address; }
-    public void setAddress(String address) { this.address = address; }
+    public void setContact(String contact) {
+        this.contact = contact;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State state) {
+        this.state = state;
+    }
+
+    public City getCity() {
+        return city;
+    }
+
+    public void setCity(City city) {
+        this.city = city;
+    }
+
+    public Area getArea() {
+        return area;
+    }
+
+    public void setArea(Area area) {
+        this.area = area;
+    }
+
+    public String getClinicName() {
+        return clinicName;
+    }
+
+    public void setClinicName(String clinicName) {
+        this.clinicName = clinicName;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
 
     public List<DoctorAppointmentSchedule> getAppointmentSchedules() {
         return appointmentSchedules;

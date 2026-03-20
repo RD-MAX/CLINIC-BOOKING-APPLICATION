@@ -1,7 +1,5 @@
 package com.booking_service.entity;
-
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -12,7 +10,6 @@ public class BookingConfirmation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-
     private long doctorId;
     private long patientId;
     private String doctorName;
@@ -21,12 +18,8 @@ public class BookingConfirmation {
     private LocalDate date;
     private LocalTime time;
     private String status;
-
-
-
     private String clinicName;       // coming from Doctor service
     private Float bookingAmount;     // coming from Booking table
-
 
     public String getClinicName() {
         return clinicName;

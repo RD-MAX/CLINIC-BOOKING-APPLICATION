@@ -1,7 +1,5 @@
 package com.booking_service.entity;
-
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -17,11 +15,7 @@ public class Booking {
 // added infor for slots and date and pending status of payment
     private LocalDate date;      // ✅ add
     private LocalTime time;      // ✅ add
-
-
-    private Float amount;//for etra details on fetching by booking id
-
-
+    private Float amount;//for extra details on fetching by booking id
 
     public Float getAmount() {
         return amount;

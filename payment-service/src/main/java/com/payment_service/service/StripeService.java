@@ -1,4 +1,5 @@
 package com.payment_service.service;
+
 import com.payment_service.dto.ProductRequest;
 import com.payment_service.dto.StripeResponse;
 import com.stripe.Stripe;
@@ -7,6 +8,7 @@ import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
 @Service
 public class StripeService {
 
@@ -16,8 +18,6 @@ public class StripeService {
     //stripe -API
     //-> productName , amount , quantity , currency
     //-> return sessionId and url
-
-
 
     public StripeResponse checkoutProducts(ProductRequest productRequest) {
         // Set your secret key. Remember to switch to your live secret key in production!
@@ -62,14 +62,14 @@ public class StripeService {
         } catch (StripeException e) {
             //log the error
         }
-       
-         StripeResponse sr = new StripeResponse();
-         sr.setStatus("SUCCESS");
-         sr.setMessage("Payment session created ");
-         sr.setSessionId(session.getId());
-         sr.setSessionUrl(session.getUrl());
-         
-         return sr;
+
+        StripeResponse sr = new StripeResponse();
+        sr.setStatus("SUCCESS");
+        sr.setMessage("Payment session created ");
+        sr.setSessionId(session.getId());
+        sr.setSessionUrl(session.getUrl());
+
+        return sr;
 
     }
 

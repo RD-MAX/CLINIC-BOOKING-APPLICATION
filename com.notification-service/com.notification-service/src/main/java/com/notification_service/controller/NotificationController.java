@@ -17,7 +17,7 @@ public class NotificationController {
     private SmsService smsService;
 
     @PostMapping("/send")
-    public String sendNotification(@RequestBody NotificationRequestDto request){
+    public String sendNotification(@RequestBody NotificationRequestDto request) {
 
         emailService.sendEmail(request);
         smsService.sendSms(request);

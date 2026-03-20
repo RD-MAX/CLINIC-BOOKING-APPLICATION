@@ -1,16 +1,10 @@
 package com.booking_service.dto;
-import jakarta.persistence.*;
 
 public class State {
     private Long id;
-
     private String name;
 
-
-
-    public String getName() {
-        return name;
-    }
+    public String getName() {return name;}
 
     public void setName(String name) {
         this.name = name;

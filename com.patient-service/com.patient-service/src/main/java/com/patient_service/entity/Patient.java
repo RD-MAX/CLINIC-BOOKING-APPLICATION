@@ -3,8 +3,23 @@ package com.patient_service.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name="patients")
+@Table(name = "patients")
 public class Patient {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+    @Column(name = "name", nullable = false)
+    private String name;
+
+    @Column(name = "email", nullable = false)
+    private String email;
+    @Column(name = "phone", nullable = false)
+    private String phone;
+    @Column(name = "age", nullable = false)
+    private int age;
+    @Column(name = "gender", nullable = false)
+    private String gender;
 
     public int getAge() {
         return age;
@@ -21,24 +36,6 @@ public class Patient {
     public void setGender(String gender) {
         this.gender = gender;
     }
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    @Column(name="name" ,nullable=false)
-     private String name;
-
-
-    @Column(name="email" ,nullable=false)
-    private String email;
-
-    @Column(name="phone" ,nullable=false)
-    private String phone;
-    @Column(name="age" ,nullable=false)
-    private int age;
-    @Column(name="gender" ,nullable=false)
-    private String gender;
-
 
     public Long getId() {
         return id;

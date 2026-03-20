@@ -4,9 +4,7 @@ import java.time.LocalTime;
 
 public class TimeSlots {
     private Long id;
-
     private LocalTime time;
-
     private DoctorAppointmentSchedule doctorAppointmentSchedule;
 
     public DoctorAppointmentSchedule getDoctorAppointmentSchedule() {

@@ -31,7 +31,7 @@ public class ProductCheckoutController {
 
     @GetMapping("/success")
     public ResponseEntity<String> handleSuccess(@RequestParam("session_id") String sessionId) {
-       //Replace with your actual secret key
+        //Replace with your actual secret key
 
         try {
             Session session = Session.retrieve(sessionId);

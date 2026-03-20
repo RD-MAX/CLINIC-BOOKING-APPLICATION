@@ -3,14 +3,11 @@ package com.booking_service.client;
 import com.booking_service.dto.Doctor;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "doctor-service", url = "http://localhost:7079/api/v1/doctors")
+@FeignClient(name = "doctor-service")
 public interface DoctorClient {
-    @GetMapping( "/doctor/{id}")
-    Doctor getDoctorById(@RequestParam("id") long id);
 
-
-
-
+    @GetMapping("/doctor/{id}")
+    Doctor getDoctorById(@PathVariable("id") long id); // ✅ FIXED
 }

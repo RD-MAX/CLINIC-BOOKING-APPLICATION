@@ -1,13 +1,11 @@
 package com.doctor_service.controller;
 
-
 import com.doctor_service.entity.Doctor;
 import com.doctor_service.entity.DoctorAppointmentSchedule;
 import com.doctor_service.entity.TimeSlots;
 import com.doctor_service.repository.DoctorsRepository;
 import com.doctor_service.service.S3Service;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -53,14 +51,9 @@ public class DoctorController {
   return new ResponseEntity<>(saved,HttpStatus.CREATED);
   }
 
-
 //----------------------for uploading pictures of profiles---------using s3------
 
-
-
-
-
-        @PostMapping("/upload")
+    @PostMapping("/upload")
         public ResponseEntity<String> uploadPhoto(@RequestParam("file") MultipartFile file ,@RequestParam long doctorId)
                 throws IOException {
 

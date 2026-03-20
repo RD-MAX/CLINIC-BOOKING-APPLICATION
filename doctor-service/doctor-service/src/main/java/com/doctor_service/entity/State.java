@@ -1,7 +1,7 @@
 package com.doctor_service.entity;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "state")
@@ -13,8 +13,6 @@ public class State {
     @NotBlank(message = "state is required")
     @Column(name = "name", nullable = false)
     private String name;
-
-
 
     public String getName() {
         return name;
