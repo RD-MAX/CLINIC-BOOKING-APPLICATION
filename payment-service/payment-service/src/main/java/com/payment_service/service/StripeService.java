@@ -50,6 +50,7 @@ public class StripeService {
         // 2️⃣ Init Stripe
         Stripe.apiKey = secretkey;
 
+
         // 3️⃣ Build Stripe product dynamically
         String productName = "Doctor Consultation - " +
                 (booking.getClinicName() != null ? booking.getClinicName() : "Clinic");
@@ -78,6 +79,7 @@ public class StripeService {
         SessionCreateParams params =
                 SessionCreateParams.builder()
                         .setMode(SessionCreateParams.Mode.PAYMENT)
+                        // ✅ GOOD: configurable via properties
                         .setSuccessUrl("http://localhost:7075/api/v1/payments/success?session_id={CHECKOUT_SESSION_ID}")
                         .setCancelUrl("http://localhost:7075/api/v1/payments/cancel")
                         .addLineItem(lineItem)
