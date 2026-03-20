@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @FeignClient(name = "booking-service")
 public interface BookingClient {
 
-    @PostMapping("/confirm/{id}")
+    @PostMapping("/api/v1/bookings/confirm")
     BookingConfirmationDto confirmBooking(@RequestBody BookingConfirmationDto dto);
 
 

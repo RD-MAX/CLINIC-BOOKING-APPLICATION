@@ -26,13 +26,6 @@ public class StripeService {
 @Autowired
     private BookingClient bookingClient;
 
-//    public StripeService(BookingClient bookingClient) {
-//        this.bookingClient = bookingClient;
-//    }
-
-
-
-
     public StripeResponse checkoutByBookingId(Long bookingId) {
 
         // 1️⃣ Fetch booking details from booking-service
@@ -194,7 +187,6 @@ public void handlePaymentSuccess(String sessionId) throws Exception {
 }
 
 
-
     @Value("${stripe.webhook.secret}")
     private String webhookSecret;
 
@@ -203,30 +195,38 @@ public void handlePaymentSuccess(String sessionId) throws Exception {
         Event event;
 
         try {
-            event = Webhook.constructEvent(
-                    payload,
-                    sigHeader,
-                    webhookSecret
-            );
+            event = Webhook.constructEvent(payload, sigHeader, webhookSecret);
         } catch (Exception e) {
             throw new RuntimeException("Invalid Stripe signature");
         }
 
         System.out.println("🔔 Webhook event received: " + event.getType());
 
-        // ✅ Only handle checkout success
         if ("checkout.session.completed".equals(event.getType())) {
 
-            // 🔥 THIS IS THE KEY LINE
-            StripeObject stripeObject = event.getData().getObject();
+            EventDataObjectDeserializer deserializer = event.getDataObjectDeserializer();
+
+            StripeObject stripeObject;
+
+            if (deserializer.getObject().isPresent()) {
+                stripeObject = deserializer.getObject().get();
+            } else {
+                System.out.println("❌ Unable to deserialize Stripe object");
+                return;
+            }
 
             if (!(stripeObject instanceof Session session)) {
-                System.out.println("❌ Event data is NOT a Session");
+                System.out.println("❌ Not a checkout session");
                 return;
             }
 
             System.out.println("✅ Session ID: " + session.getId());
             System.out.println("📦 Metadata: " + session.getMetadata());
+
+            if (!"paid".equalsIgnoreCase(session.getPaymentStatus())) {
+                System.out.println("❌ Payment not completed");
+                return;
+            }
 
             String bookingIdStr = session.getMetadata().get("bookingId");
 
@@ -236,6 +236,8 @@ public void handlePaymentSuccess(String sessionId) throws Exception {
             }
 
             Long bookingId = Long.valueOf(bookingIdStr);
+
+            System.out.println("➡ Calling booking confirm API for ID: " + bookingId);
 
             bookingClient.confirmBookingById(bookingId);
 

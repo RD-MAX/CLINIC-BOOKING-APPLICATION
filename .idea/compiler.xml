@@ -14,11 +14,11 @@
         <module name="booking-service" />
         <module name="auth.service" />
         <module name="eureka-server" />
-        <module name="payment-service (1)" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="com.booking-service" target="25" />
+      <module name="payment-service (1)" target="17" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
