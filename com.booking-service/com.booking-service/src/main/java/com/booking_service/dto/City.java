@@ -1,11 +1,7 @@
 package com.booking_service.dto;
 
-import jakarta.persistence.*;
-
-
 public class City {
     private Long id;
-
     private String name;
 
     public String getName() {

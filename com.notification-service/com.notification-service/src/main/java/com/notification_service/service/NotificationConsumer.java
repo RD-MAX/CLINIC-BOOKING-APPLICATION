@@ -3,7 +3,6 @@ package com.notification_service.service;
 import com.notification_service.client.BookingClient;
 import com.notification_service.dto.BookingConfirmationDto;
 import com.notification_service.dto.NotificationRequestDto;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
@@ -41,7 +40,6 @@ public class NotificationConsumer {
         try {
 
             System.out.println("📩 Processing booking ID: " + bookingId);
-
             // Fetch booking details from booking-service
             BookingConfirmationDto booking = bookingClient.getBookingById(bookingId);
 

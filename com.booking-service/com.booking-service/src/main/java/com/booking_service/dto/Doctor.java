@@ -1,44 +1,19 @@
 package com.booking_service.dto;
-
 import java.util.List;
 
 public class Doctor {
     private Long id;
-
     private String name;
-
     private String specialization;
-
     private String qualification;
-
     private String contact;
-
     private String experience;
-
     private String url;
-
     private State state;
-
     private City city;
-
-
-
     private String address;
-
     private Area area;
-
-
-
     private String clinicName;
-
-    public String getClinicName() {
-        return clinicName;
-    }
-
-    public void setClinicName(String clinicName) {
-        this.clinicName = clinicName;
-    }
-
     private List<DoctorAppointmentSchedule> appointmentSchedules;
 
     public List<DoctorAppointmentSchedule> getAppointmentSchedules() {
@@ -47,6 +22,13 @@ public class Doctor {
 
     public void setAppointmentSchedules(List<DoctorAppointmentSchedule> appointmentSchedules) {
         this.appointmentSchedules = appointmentSchedules;
+    }
+    public String getClinicName() {
+        return clinicName;
+    }
+
+    public void setClinicName(String clinicName) {
+        this.clinicName = clinicName;
     }
 
     public Area getArea() {

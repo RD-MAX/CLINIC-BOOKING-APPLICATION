@@ -1,6 +1,5 @@
 package com.notification_service.dto;
 
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -12,30 +11,12 @@ public class BookingConfirmationDto {
     private String email;
     private String phone;
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
     private String doctorName;
     private String patientName;
     private String address;
     private LocalDate date;
     private LocalTime time;
     private String status;
-
-
     // 🔥 new fields
     private String clinicName;
     private Float bookingAmount;
@@ -72,6 +53,22 @@ public class BookingConfirmationDto {
         this.id = id;
     }
 
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 
 
     public LocalTime getTime() {

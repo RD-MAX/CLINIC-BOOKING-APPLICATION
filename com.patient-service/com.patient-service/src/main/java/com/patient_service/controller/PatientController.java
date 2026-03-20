@@ -1,7 +1,6 @@
 package com.patient_service.controller;
 
 import com.patient_service.dto.PatientDto;
-import com.patient_service.entity.Patient;
 import com.patient_service.repository.PatientRepository;
 import com.patient_service.service.PatientService;
 import jakarta.validation.Valid;
@@ -17,27 +16,25 @@ import java.util.Map;
 @Validated
 public class PatientController {
 
-@Autowired
+    @Autowired
     private PatientRepository patientRepository;
-@Autowired
+    @Autowired
     private PatientService patientService;
 
+    @PostMapping("/save")
+    public PatientDto savePatient(@Valid @RequestBody PatientDto dto) {
+        return patientService.savePatient(dto);   // returns 200 OK by default;
+    }
 
-@PostMapping("/save")
-    public PatientDto savePatient(@Valid @RequestBody PatientDto dto){
-    return  patientService.savePatient(dto);   // returns 200 OK by default;
-}
+    @GetMapping("/patient/{id}")
+    public PatientDto getPatientById(@PathVariable Long id) {
+        return patientService.getPatientById(id);
+    }
 
-@GetMapping("/patient/{id}")
-    public PatientDto getPatientById(@PathVariable  Long id){
-    return patientService.getPatientById(id);
-}
-
-@GetMapping("/all")
-    public List< PatientDto> getAllPatients() {
-return patientService.getAllPatients();
-}
-
+    @GetMapping("/all")
+    public List<PatientDto> getAllPatients() {
+        return patientService.getAllPatients();
+    }
 
     @GetMapping("/search")
     public Map<String, Object> searchPatients(
@@ -60,5 +57,4 @@ return patientService.getAllPatients();
                 sortBy
         );
     }
-
 }

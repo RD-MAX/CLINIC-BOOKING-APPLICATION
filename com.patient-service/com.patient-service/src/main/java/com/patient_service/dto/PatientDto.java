@@ -2,26 +2,25 @@ package com.patient_service.dto;
 
 import jakarta.validation.constraints.*;
 
-public class PatientDto
-{
-        private Long id;
+public class PatientDto {
+    private Long id;
 
-        @NotBlank(message = "Name is required")
-        private String name;
+    @NotBlank(message = "Name is required")
+    private String name;
 
-        @Email(message = "Invalid email format")
-        @NotBlank(message = "Email is required")
-        private String email;
+    @Email(message = "Invalid email format")
+    @NotBlank(message = "Email is required")
+    private String email;
 
-        @Pattern(regexp = "^[0-9]{10}$", message = "Phone must be 10 digits")
-        private String phone;
+    @Pattern(regexp = "^[0-9]{10}$", message = "Phone must be 10 digits")
+    private String phone;
 
-        @Min(value = 0, message = "Age must be positive")
-        @Max(value = 120, message = "Age must be realistic")
-        private int age;
+    @Min(value = 0, message = "Age must be positive")
+    @Max(value = 120, message = "Age must be realistic")
+    private int age;
 
-        @NotBlank(message = "Gender is required")
-        private String gender;
+    @NotBlank(message = "Gender is required")
+    private String gender;
 
     public Long getId() {
         return id;

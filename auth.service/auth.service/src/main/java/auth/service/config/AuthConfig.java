@@ -1,6 +1,5 @@
 package auth.service.config;
 
-//import com.examplesecurity.securityexample.service.CustomerUserDetailsService;
 import auth.service.filter.JwtFilter;
 import auth.service.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +18,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class AuthConfig {
 
-
     @Autowired
     private JwtFilter filter;
-
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -62,10 +59,8 @@ public class AuthConfig {
         return config.getAuthenticationManager();
     }
 
-
     @Autowired
     private CustomUserDetailsService customerUserDetailsService;
-
 
     @Bean
     public AuthenticationProvider authProvider() {

@@ -25,16 +25,13 @@ public class DoctorService {
     @Autowired
     private TimeSlotsRepository timeSlotsRepository;
 
-
-
-
     private final StateRepository stateRepository;
     private final CityRepository cityRepository;
     private final AreaRepository areaRepository;
 
     public DoctorService(StateRepository stateRepository,
-                           CityRepository cityRepository,
-                           AreaRepository areaRepository) {
+                         CityRepository cityRepository,
+                         AreaRepository areaRepository) {
         this.stateRepository = stateRepository;
         this.cityRepository = cityRepository;
         this.areaRepository = areaRepository;
@@ -51,12 +48,12 @@ public class DoctorService {
         LocalDate currentDate = LocalDate.now();
 
         //sorting
-        Sort sort= sortDir.equalsIgnoreCase("asc")?
-                Sort.by(sortBy).ascending():
+        Sort sort = sortDir.equalsIgnoreCase("asc") ?
+                Sort.by(sortBy).ascending() :
                 Sort.by(sortBy).descending();
 
         //pagenation
-        Pageable pageable= PageRequest.of(pageNo,pageSize,sort);
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 
         // ✅ NEW (handle all cases)
         Page<Doctor> page;
@@ -65,14 +62,11 @@ public class DoctorService {
             page = doctorsRepository.findBySpecializationAndArea_Name(
                     specialization, areaName, pageable
             );
-        }
-        else if (specialization != null) {
+        } else if (specialization != null) {
             page = doctorsRepository.findBySpecialization(specialization, pageable);
-        }
-        else if (areaName != null) {
+        } else if (areaName != null) {
             page = doctorsRepository.findByArea_Name(areaName, pageable);
-        }
-        else {
+        } else {
             page = doctorsRepository.findAll(pageable);
         }
 
@@ -125,7 +119,7 @@ public class DoctorService {
                             }
                         }
                         // past date-invalid
-                        else if (scheduleDate.isBefore(currentDate)){
+                        else if (scheduleDate.isBefore(currentDate)) {
                             System.out.println("invalid date");
                         }
                         //future date-all time
@@ -158,7 +152,6 @@ public class DoctorService {
                 "last", page.isLast()
         );
     }
-
 
 
     // ✅ Get all states

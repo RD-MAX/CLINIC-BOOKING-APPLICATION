@@ -1,9 +1,5 @@
 package auth.service.dto;
 
-
-import jakarta.persistence.*;
-
-
 public class UserDto {
 
     private Long id;

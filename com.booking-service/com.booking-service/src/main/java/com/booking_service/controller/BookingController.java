@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -23,8 +22,7 @@ public class BookingController {
         return bookingService.createBooking(dto);
     }
 
-     //after--payment--confirm by details in json-- /*@RequestBody BookingConfirmationDto dto*/
-   @PostMapping("/confirm/{id}")
+    @PostMapping("/confirm/{id}")
     public BookingConfirmationDto confirmBookingById(@PathVariable("id") long bookingId) {
         return bookingService.confirmBookingById(bookingId);
     }
@@ -34,51 +32,32 @@ public class BookingController {
         return bookingService.getBookingById(bookingId);
     }
 
+    // ✅ PAGINATION + FILTER
     @GetMapping("/patient/{id}")
     public Map<String, Object> getBookingsByPatientId(
-
             @PathVariable("id") Long patientId,
-
             @RequestParam(required = false) String status,
-
             @RequestParam(defaultValue = "0") int pageNo,
             @RequestParam(defaultValue = "5") int pageSize,
-
             @RequestParam(defaultValue = "asc") String sortDir,
             @RequestParam(defaultValue = "date") String sortBy
     ) {
         return bookingService.getBookingsByPatientId(
-                patientId,
-                status,
-                pageNo,
-                pageSize,
-                sortDir,
-                sortBy
+                patientId, status, pageNo, pageSize, sortDir, sortBy
         );
     }
 
     @GetMapping("/doctor/{doctorId}")
     public Map<String, Object> getBookingsByDoctorId(
-
             @PathVariable Long doctorId,
-
             @RequestParam(required = false) String status,
-
             @RequestParam(defaultValue = "0") int pageNo,
             @RequestParam(defaultValue = "5") int pageSize,
-
             @RequestParam(defaultValue = "asc") String sortDir,
             @RequestParam(defaultValue = "date") String sortBy
     ) {
         return bookingService.getBookingsByDoctorId(
-                doctorId,
-                status,
-                pageNo,
-                pageSize,
-                sortDir,
-                sortBy
+                doctorId, status, pageNo, pageSize, sortDir, sortBy
         );
     }
 }
-
-

@@ -77,7 +77,6 @@ public class PatientService {
         return patient;
     }
 
-
     public Map<String, Object> searchPatients(
             String name,
             String gender,
@@ -107,7 +106,6 @@ public class PatientService {
         } else {
             page = patientRepository.findAll(pageable);
         }
-
         // ✅ convert entity -> DTO
         List<Patient> patients = page.getContent();
         List<PatientDto> result = new ArrayList<>();
@@ -115,7 +113,6 @@ public class PatientService {
         for (Patient patient : patients) {
             result.add(mapToDto(patient));
         }
-
         // ✅ response format (same as doctor service)
         Map<String, Object> response = new HashMap<>();
         response.put("content", result);

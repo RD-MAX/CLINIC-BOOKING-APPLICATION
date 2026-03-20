@@ -1,6 +1,5 @@
 package com.booking_service.service;
 
-import com.booking_service.client.BookingClient;
 import com.booking_service.client.DoctorClient;
 import com.booking_service.client.PatientClient;
 import com.booking_service.dto.BookingConfirmationDto;
@@ -32,7 +31,6 @@ public class BookingService {
     @Autowired
     private BookingRepository bookingRepository;
 
-    //===================================confrimation after payment
     @Autowired
     private BookingConfirmationRepository bookingConfirmationRepository;
 
@@ -42,7 +40,6 @@ public class BookingService {
     @Autowired
     private PatientClient patientClient;
 
-    // after payment --booking confirmed-kafka-
     @Autowired
     private BookingProducer bookingProducer;
 
@@ -107,17 +104,11 @@ public class BookingService {
 
         bookingRepository.save(rawBooking);
 
-        // ❌ Do NOT save into BOOKING_CONFIRMATIONS here (payment not done yet)
-        // confirmation will be created after payment success
-
         dto.setStatus("PENDING_PAYMENT");
         return dto;
     }
 
-
-
-
-
+    //----------------------------------------------------------------------------------------------
     public BookingConfirmationDto getBookingById(Long id) {
 
         // 1️⃣ First try to fetch from CONFIRMED bookings
@@ -126,7 +117,6 @@ public class BookingService {
         if (confirmed != null) {
             return mapToDto(confirmed);
         }
-
         // 2️⃣ If not found, fetch from PENDING bookings
         Booking rawBooking = bookingRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Booking not found: " + id));
@@ -160,6 +150,7 @@ public class BookingService {
         return dto;
     }
 
+    //----------------------------------------------------------------------------------------------
     public Map<String, Object> getBookingsByPatientId(
             Long patientId,
             String status,
@@ -190,7 +181,6 @@ public class BookingService {
         for (BookingConfirmation booking : page.getContent()) {
             result.add(mapToDto(booking));
         }
-
         Map<String, Object> response = new HashMap<>();
         response.put("content", result);
         response.put("page", page.getNumber());
@@ -201,11 +191,6 @@ public class BookingService {
 
         return response;
     }
-
-
-
-
-
 
 
     public Map<String, Object> getBookingsByDoctorId(
@@ -254,8 +239,6 @@ public class BookingService {
 
         return response;
     }
-
-
 
 
     // 🔥 NEW: Confirm booking using bookingId (used by payment-service)

@@ -5,10 +5,10 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "booking-service", url = "http://localhost:7076/api/v1/bookings")
+@FeignClient(name = "booking-service")
 public interface BookingClient {
 
-    @GetMapping("/{bookingId}")
+    @GetMapping("/booking/{bookingId}")
     BookingConfirmationDto getBookingById(@PathVariable Long bookingId);
 
 }

@@ -58,15 +58,15 @@ public class ProductCheckoutController {
 
 
     // ✅ POST with query param bookingId (no JSON body needed)
-    @PostMapping(value = "/checkoutbybookingid", params = "bookingId")
-    public ResponseEntity<StripeResponse> checkoutByBookingId(@RequestParam Long bookingId) {
+    @PostMapping(value = "/pay/{id}")
+    public ResponseEntity<StripeResponse> checkoutByBookingId(@PathVariable("id") Long bookingId) {
         StripeResponse stripeResponse = stripeService.checkoutByBookingId(bookingId);
         return ResponseEntity.status(HttpStatus.OK).body(stripeResponse);
     }
 
 
 //webhook controller
-@PostMapping("/webhook")
+@PostMapping(value = "/webhook", consumes = "application/json")
 public ResponseEntity<String> handleWebhook(
         @RequestBody String payload,
         @RequestHeader("Stripe-Signature") String sigHeader) {

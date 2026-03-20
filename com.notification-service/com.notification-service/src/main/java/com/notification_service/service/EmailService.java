@@ -1,7 +1,6 @@
 package com.notification_service.service;
 
 import com.notification_service.dto.NotificationRequestDto;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -13,9 +12,9 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    public void sendEmail(NotificationRequestDto req){
+    public void sendEmail(NotificationRequestDto req) {
 
-        if(req.getEmail() == null || req.getEmail().trim().isEmpty()){
+        if (req.getEmail() == null || req.getEmail().trim().isEmpty()) {
             System.out.println("⚠ Email skipped: email missing");
             return;
         }
@@ -35,7 +34,6 @@ public class EmailService {
         );
 
         mailSender.send(message);
-
         System.out.println("📧 Email sent to " + req.getEmail());
     }
 }
