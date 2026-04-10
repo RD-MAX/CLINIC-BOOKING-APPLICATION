@@ -1,219 +1,216 @@
-🏥 Doctor Appointment Booking System (Microservices)
+# 🏥 Clinic Booking Application (Microservices Architecture)
+
+## 🚀 Overview
+
+This is a **full-stack microservices-based Clinic Booking Application** built using **Spring Boot**. The system allows patients to search doctors, book appointments, make payments, and receive notifications.
+
+The project demonstrates real-world backend architecture including:
+
+* Microservices communication
+* Event-driven design
+* Secure authentication
+* Payment integration
+
+---
+
+## 🧩 Microservices Included
+
+* 🔐 Auth Service (JWT + Spring Security)
+* 👨‍⚕️ Doctor Service
+* 🧑‍🤝‍🧑 Patient Service
+* 📅 Booking Service
+* 💳 Payment Service (Stripe Webhook Integration)
+* 🔔 Notification Service (Email, SMS, WhatsApp via Twilio)
+* 📦 Order/Workflow handling
+* 🧭 Eureka Server (Service Discovery)
+
+---
+
+## 🏗️ Architecture Diagram
+
+```text
+                ┌────────────────────┐
+                │    API Client      │
+                │   (Postman/UI)     │
+                └─────────┬──────────┘
+                          │
+                          ▼
+                ┌────────────────────┐
+                │   Auth Service     │
+                │  (JWT Security)    │
+                └─────────┬──────────┘
+                          │
+                          ▼
+                ┌────────────────────┐
+                │  API Requests Flow │
+                └─────────┬──────────┘
+                          │
+        ┌─────────────────┼─────────────────┐
+        ▼                 ▼                 ▼
+┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+│ Doctor       │  │ Patient      │  │ Booking      │
+│ Service      │  │ Service      │  │ Service      │
+└──────┬───────┘  └──────┬───────┘  └──────┬───────┘
+       │                 │                 │
+       └──────────┬──────┴──────────┬──────┘
+                  ▼                 ▼
+          ┌──────────────┐  ┌──────────────┐
+          │ Payment      │  │ Notification │
+          │ Service      │  │ Service      │
+          └──────┬───────┘  └──────────────┘
+                 │
+                 ▼
+          ┌──────────────┐
+          │   Kafka      │
+          │ (Event Bus)  │
+          └──────────────┘
 
-A Doctor Appointment Booking Platform built using Spring Boot Microservices.
-Patients can search doctors, view available slots, book appointments, and make payments.
-Doctors can create profiles and manage their appointment schedules.
+        (All services registered with Eureka Server)
+```
 
-This project demonstrates real-world microservice architecture, Feign client communication, and Stripe payment integration.
+### 🔥 Flow Explanation
 
+1. Client sends request → Auth Service validates JWT
+2. Booking Service interacts with Doctor & Patient services via Feign
+3. Payment Service handles Stripe payment
+4. On success → Kafka event triggered and Booking Confirmed
+5. Notification Service consumes event → sends SMS/Email/Whatsapp
 
-🚀 Tech Stack
+---
 
+## ⚙️ Tech Stack
 
-Language: Java
+### Backend
 
-Framework: Spring Boot
+* Java 17
+* Spring Boot
+* Spring Data JPA
+* Spring Security + JWT
+* Spring Cloud (Open Feign Client, Eureka)
+* Apache Kafka (Event-driven communication)
 
-Microservices:
+### Database
 
-Doctor Service
+* MySQL (Workbench used for queries & management)
 
-Patient Service
+### Third-Party Integrations
 
-Booking Service
+* Stripe (Payment + Webhooks)
+* Twilio (SMS / WhatsApp Notifications)
+* Email Notifications
 
-Payment Service
+### Tools & Development
 
-Database: MySQL
+* IntelliJ IDEA
+* Postman (API Testing)
+* Maven
+* Spring Initializer
 
-Service Discovery: Eureka Server
+---
 
-Inter-Service Communication: OpenFeign
+## 🔗 Key Features
 
-Payment Gateway: Stripe
+### ✅ Microservices Architecture
 
-Build Tool: Maven
+* Loosely coupled services
+* Service-to-service communication using **OpenFeign**
 
-API Testing: Postman
+### ✅ Authentication & Security
 
+* JWT-based authentication
+* Role-based authorization
+* Spring Security implemented
 
+### ✅ Booking System
 
-Version Control: Git & GitHub
+* Doctor schedule validation
+* Slot availability check
+* Prevents double booking
 
+### ✅ Payment Integration
 
-🧩 Microservices Overview
-🩺 Doctor Service
+* Stripe payment gateway
+* Prevents double payment
+* Webhook-based booking confirmation
 
-Handles doctor profiles and appointment schedules.
+### ✅ Event-Driven Architecture
 
+* Kafka used for async communication
+* Booking confirmation triggers notification events
 
+### ✅ Notification System
 
-Features:
+* Email notifications
+* SMS & WhatsApp via Twilio
 
+### ✅ Pagination, Sorting & Filtering
 
-Create doctor profile
+* Implemented in APIs
+* Supports search
 
-Add available appointment slots
+### ✅ Validation
 
-Search doctors by specialization and location
+* DTO-level validation using annotations
+* Global exception handling
 
-Exposes doctor data to Booking Service via Feign
+---
 
+## 🗄️ Database Design
 
+* Relational database (MySQL)
+* Separate schema per service
+* Tables include:
 
-APIs:
+  * Patients
+  * Doctors
+  * Bookings
+  * Booking Confirmations
 
+---
 
-POST /api/v1/doctors/save-doctor
+## 🐳 Docker Support (Planned / In Progress)
 
-GET /api/v1/doctor/search-doctor?specialization=Cardiologist&areaName=BTM
+* Services can be containerized
+* MySQL and Kafka can run via Docker
+* Goal: One-command startup using `docker-compose`
 
-GET /api/v1/doctors/getdoctorbyid?id=1
+### Prerequisites To Run
 
+* Java 17
+* Maven
+* MySQL
+* Kafka
 
+### Steps
 
-🧑 Patient Service
+1. Clone the repository
+2. Start MySQL & Kafka
+3. Run Eureka Server
+4. Start all microservices
+5. Test APIs using Postman
 
+---
 
-Manages patient details.
+## 📌 Future Improvements
 
+* Docker Compose for full system setup
+* API Gateway integration
+* UI (React/Angular)
+* Centralized logging (ELK)
+* Distributed tracing (Zipkin)
 
-Features:
+---
 
+## 💡 What I Learned
 
-Create patient profile
+* Designing scalable microservices
+* Handling inter-service communication
+* Implementing secure authentication
+* Working with real-world payment systems
+* Event-driven architecture using Kafka
 
-Fetch patient by ID
+---
 
-View all patients
+## 👩‍💻 Author
 
-Exposes patient data to Booking Service via Feign
-
-
-
-APIs:
-
-
-POST /api/v1/patients/save-patient
-
-GET /api/v1/patients/getpatientbyid?id=1
-
-GET /api/v1/patients/getallpatients
-
-
-
-📅 Booking Service
-
-
-Handles appointment bookings.
-
-
-Features:
-
-
-Create booking for selected doctor and time slot
-
-Get booking by booking ID
-
-Get bookings by patient ID
-
-Get bookings by doctor ID
-
-Uses Feign clients to call Doctor and Patient services
-
-
-APIs:
-
-
-POST /api/v1/bookings/create
-
-GET /api/v1/bookings/getbybookingid?id=1
-
-GET /api/v1/bookings/getbypatientid?patientId=2
-
-GET /api/v1/bookings/getbydoctorid?doctorId=3
-
-
-
-💳 Payment Service (Stripe)
-
-
-Handles online payments for bookings.
-
-
-Features:
-
-
-Create Stripe checkout session
-
-Redirect user to Stripe payment page
-
-Handle payment success and cancellation
-
-
-APIs:
-
-
-POST /checkout
-
-GET /success?session_id={CHECKOUT_SESSION_ID}
-
-GET /cancel
-
-
-📡 Eureka Server
-
-
-Service registry for microservices.
-
-
-Features:
-
-
-Registers Doctor, Patient, Booking, and Payment services
-
-Enables service discovery for Feign clients
-
-
-
-🔁 Booking Flow
-
-Patient → Search Doctor → View Slots → Select Date & Time → Create Booking → Make Payment → Booking Confirmed
-
-
-🧪 How to Run
-
-
-Start Eureka Server
-
-Start Doctor Service
-
-Start Patient Service
-
-Start Booking Service
-
-Start Payment Service
-
-Test APIs using Postman
-
-
-
-📌 Key Concepts Demonstrated
-
-
-Microservices architecture
-
-
-REST API design
-
-DTO ↔ Entity mapping
-
-Feign Client communication
-
-Service Discovery using Eureka
-
-Stripe payment gateway integration
-
-Layered architecture (Controller, Service, Repository)
-
-Git branching & version control
+**Riya**
